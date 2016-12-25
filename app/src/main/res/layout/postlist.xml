@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <FrameLayout
+        android:background="@drawable/postborder"
+        android:layout_width="match_parent"
+        android:layout_height="98dp"
+        android:layout_marginBottom="5dp"
+        >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:background="@color/white"
+        android:layout_margin="10dp"
+        android:id="@+id/PostT" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Medium Text"
+            android:background="@color/white"
+            android:layout_margin="3dp"
+            android:textSize="15dp"
+            android:id="@+id/sub_cat_view"
+            android:layout_gravity="center_horizontal|bottom" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:clickable="true"
+            android:src="@drawable/bookmarkunchecked"
+            android:id="@+id/bookmark"
+            android:layout_gravity="right|bottom" />
+
+        <TextView
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_marginRight="200px"
+            android:textSize="10dp"
+            android:layout_marginBottom="10px"
+            android:id="@+id/timestamp"
+            android:layout_gravity="right|bottom" />
+    </FrameLayout>
+</LinearLayout>

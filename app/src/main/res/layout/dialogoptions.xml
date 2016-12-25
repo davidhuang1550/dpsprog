@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Search By"
+        android:textStyle="bold"
+        android:textSize="50px"
+        android:background="@drawable/backgrounddialog"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:id="@+id/textView" />
+
+    <Button
+                android:text="Post"
+                android:layout_width="match_parent"
+                android:background="@drawable/backgroundoptionsdialog"
+                android:layout_height="wrap_content"
+                android:id="@+id/SearchPost" />
+
+            <Button
+                android:text="User"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/backgroundoptionsdialog"
+                android:id="@+id/SearchUser" />
+
+            <Button
+                android:text="Subcategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/backgroundoptionsdialog"
+                android:id="@+id/SearchSub" />
+
+</LinearLayout>
