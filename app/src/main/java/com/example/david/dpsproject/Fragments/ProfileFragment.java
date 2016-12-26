@@ -6,20 +6,10 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -28,34 +18,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.david.dpsproject.Adapters.MyPostAdapter;
 import com.example.david.dpsproject.AsyncTask.ProfileTask;
 import com.example.david.dpsproject.Class.Post;
-import com.example.david.dpsproject.Class.Posts;
-import com.example.david.dpsproject.Class.Sub;
-import com.example.david.dpsproject.Class.SubName;
 import com.example.david.dpsproject.Class.Users;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by david on 2016-11-16.
@@ -107,13 +85,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         if(firebaseUser!=null){
             Bitmap b =((navigation)mActivity).getprofilepic();
             if(b!=null){
-                ImageView profileP = (ImageView)myView.findViewById(R.id.ProfilePicture);
+                final com.github.siyamed.shapeimageview.CircularImageView profileP = (com.github.siyamed.shapeimageview.CircularImageView) myView.findViewById(R.id.profileImage);
                 profileP.setImageDrawable(new BitmapDrawable(mActivity.getResources(),b));
                 profileP.setScaleType(ImageView.ScaleType.FIT_XY);
 
                 Users users=((navigation)mActivity).getworkingUser();
                 joindate.setText(users.getJoinDate());
-                //numPost.setText(users.getNumOfPosts());
+                numPost.setText(Integer.toString(users.getNumOfPosts()));
             }
         }
 
@@ -196,7 +174,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         Handler handler = new Handler();
         switch (v.getId()){
             case R.id.Tposts:
-                final ProfileTask getProfilePost = new ProfileTask("posts","Posts", myView,mActivity,authentication,dbReference,firebaseUser);
+                final ProfileTask getProfilePost = new ProfileTask("posts","Posts", myView,mActivity,dbReference,firebaseUser);
                 getProfilePost.execute();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -210,7 +188,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 },5000);
                 break;
             case R.id.Tbookmark:
-                final ProfileTask getProfilePost_bookmark = new ProfileTask("posts","Bookmarks", myView,mActivity,authentication,dbReference,firebaseUser);
+                final ProfileTask getProfilePost_bookmark = new ProfileTask("posts","Bookmarks", myView,mActivity,dbReference,firebaseUser);
                 getProfilePost_bookmark.execute();
                 handler.postDelayed(new Runnable() {
                     @Override

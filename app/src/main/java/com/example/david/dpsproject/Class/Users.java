@@ -1,9 +1,13 @@
 package com.example.david.dpsproject.Class;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Base64;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by david on 2016-10-23.
@@ -18,9 +22,9 @@ public class Users {
 
     private int NumOfPosts;
 
-    private HashMap<String,ArrayList<String>> Posts;
-    private HashMap<String,ArrayList<String>> Bookmarks;
-    private HashMap<String,ArrayList<String>> Viewed;
+    private Map<String,ArrayList<Post>> Posts;
+    private ArrayList<String>Bookmarks;
+    private ArrayList<String> Viewed;
 
     private ArrayList<String> Subcategory;
     //private Profile profile;
@@ -30,12 +34,12 @@ public class Users {
 
     public  Users(){
      //   profile = new Profile();
-        Posts=new HashMap<String,ArrayList<String>>();
-        Bookmarks=new HashMap<String,ArrayList<String>>();
-        Viewed=new HashMap<String,ArrayList<String>>();
+   //     Posts=new Map<String,ArrayList<Post>>();
+        Bookmarks=new ArrayList<String>();
+        Viewed=new ArrayList<String>();
     }
-    public Users(String u, String p,HashMap<String,ArrayList<String>> s,HashMap<String,ArrayList<String>> b,
-                 HashMap<String,ArrayList<String>> v, String pic,ArrayList<String> subc, String join,int numPost) {
+    public Users(String u, String p,Map<String,ArrayList<Post>> s,ArrayList<String> b,
+                 ArrayList<String> v, String pic,ArrayList<String> subc, String join,int numPost) {
         userName = u;
         password = p;
         Posts=s;
@@ -87,27 +91,27 @@ public class Users {
     public void setPicture(String picture) {
         Picture = picture;
     }
-    public HashMap<String, ArrayList<String>> getPosts() {
+    public Map<String,ArrayList<Post>> getPosts() {
         return Posts;
     }
 
-    public void setPosts(HashMap<String, ArrayList<String>> posts) {
+    public void setPosts(Map<String,ArrayList<Post>> posts) {
         Posts = posts;
     }
 
-    public HashMap<String,ArrayList<String>> getBookmarks() {
+    public ArrayList<String> getBookmarks() {
         return Bookmarks;
     }
 
-    public void setBookmarks(HashMap<String,ArrayList<String>> bookmarks) {
+    public void setBookmarks(ArrayList<String> bookmarks) {
         Bookmarks = bookmarks;
     }
 
-    public HashMap<String,ArrayList<String>> getViewed() {
+    public ArrayList<String> getViewed() {
         return Viewed;
     }
 
-    public void setViewed(HashMap<String,ArrayList<String>> viewed) {
+    public void setViewed(ArrayList<String> viewed) {
         Viewed = viewed;
     }
     public String getPassword() {
@@ -136,6 +140,11 @@ public class Users {
                 return;
             }
         }
+    }
+    public Bitmap getDecodedPicture(){
+        byte[] decodedString = Base64.decode(getPicture(), Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
     }
 
 }

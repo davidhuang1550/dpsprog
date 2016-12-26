@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.david.dpsproject.Class.Post;
+import com.example.david.dpsproject.Fragments.SearchUser;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.Fragments.Searchpage;
 
@@ -39,31 +40,29 @@ public class SearchDialog extends DialogFragment {
             key= arg.getString("Key");
             alertDialog.setTitle("Search "+ key);
         }
-
         alertDialog.setPositiveButton("Search", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(!(editText.getText().toString().equals(""))) {
 
                     if (!key.equals("")) {
-
+                        Bundle bundle = new Bundle();
                         if(key.equals("Post")){
 
                         }
                         else if(key.equals("User")){
-
+                            SearchUser searchUser = new SearchUser();
+                            bundle.putString("username",editText.getText().toString());
+                            searchUser.setArguments(bundle);
+                            getFragmentManager().beginTransaction().replace(R.id.content_frame, searchUser).commit();
                         }
                         else if(key.equals("Sub")){
                             Searchpage searchpage = new Searchpage();
-                            Bundle bundle = new Bundle();
                             bundle.putString("Sub", editText.getText().toString());
                             searchpage.setArguments(bundle);
                             getFragmentManager().beginTransaction().replace(R.id.content_frame, searchpage).commit();
                         }
-
-
                     }
-
 
                 }
                 else{

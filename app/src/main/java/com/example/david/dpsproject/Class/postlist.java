@@ -1,23 +1,22 @@
 package com.example.david.dpsproject.Class;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
- * Created by david on 2016-11-19.
+ * Created by david on 2016-12-26.
  */
-public class Posts {
 
+public class postlist {
 
 
     private String Name;
     private ArrayList<String> postlist;
 
-    public Posts(){
+    public postlist(){
         postlist= new ArrayList<>();
     }
 
-    public Posts(String n, ArrayList<String> po){
+    public postlist(String n, ArrayList<String> po){
         Name=n;
         postlist=po;
     }
@@ -36,6 +35,5 @@ public class Posts {
     public void setPostlist(ArrayList<String> postlist) {
         this.postlist = postlist;
     }
-
 
 }

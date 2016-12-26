@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.david.dpsproject.Class.Post;
+import com.example.david.dpsproject.Class.Posts;
 import com.example.david.dpsproject.Class.Profile;
 import com.example.david.dpsproject.Class.SubString;
 import com.example.david.dpsproject.Class.Users;
@@ -30,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by david on 2016-10-25.
@@ -70,8 +73,8 @@ public class SignUp extends Fragment implements View.OnClickListener {
                     sub.add("Jesus");
                     sub.add("Soccer");
                     sub.add("Uplifting");
-                    Users u = new Users(email,password, new HashMap<String,ArrayList<String>>(),new HashMap<String,ArrayList<String>>(),
-                            new HashMap<String,ArrayList<String>>(),"",sub,fDate,0);
+                    Users u = new Users(email,password, new HashMap<String,ArrayList<Post>>(),new ArrayList<String>(),
+                            new ArrayList<String>(),"",sub,fDate,0);
                     dbReference.child("Users").child(task.getResult().getUser().getUid()).setValue(u);
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.content_frame,new LogIn()).commit();

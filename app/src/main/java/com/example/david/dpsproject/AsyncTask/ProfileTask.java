@@ -33,12 +33,11 @@ public class ProfileTask extends AsyncTask<Void,Void,Void>{
     private ArrayList<Post> ptemp;
     private ListView listView;
 
-    private FirebaseAuth authentication;
     private DatabaseReference dbReference;
     private FirebaseUser firebaseUser;
 
     private ProgressDialog pDialog;
-    public ProfileTask(String sub_posts,String profile_post, View v,Activity activity,FirebaseAuth auth,DatabaseReference dbRef,FirebaseUser firebaseU){
+    public ProfileTask(String sub_posts,String profile_post, View v,Activity activity,DatabaseReference dbRef,FirebaseUser firebaseU){
         sub_book_post=sub_posts;
         profile_book_post=profile_post;
         myView=v;
@@ -46,7 +45,6 @@ public class ProfileTask extends AsyncTask<Void,Void,Void>{
 
         ptemp=new ArrayList<Post>();
 
-        authentication=auth;
         dbReference=dbRef;
         firebaseUser=firebaseU;
 

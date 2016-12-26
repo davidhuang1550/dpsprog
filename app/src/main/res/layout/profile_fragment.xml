@@ -3,13 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:background="@drawable/customborder"
+    android:background="@color/white"
     android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:background="@drawable/profilepicturebackground"
         android:id="@+id/topProfile"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
@@ -21,16 +20,16 @@
             android:columnCount="4">
 
 
-
-            <ImageView
-                android:layout_height="91dp"
-                android:background="@drawable/profile"
-                android:layout_width="102dp"
-                android:id="@+id/ProfilePicture"
-                android:layout_row="0"
-                android:layout_column="0">
-
-            </ImageView>
+            <com.github.siyamed.shapeimageview.CircularImageView
+                android:layout_width="103dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="96dp"
+                android:id="@+id/profileImage"
+                android:layout_marginLeft="20dp"
+                app:siBorderWidth="5dp"
+                app:siBorderColor="#ffffff"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
 
             <TextView
                 android:text="Member since: "
@@ -52,28 +51,31 @@
                 android:layout_row="0" />
 
             <TextView
+                android:text="10"
+                android:layout_width="192dp"
+                android:paddingLeft="10dp"
+                android:layout_height="29dp"
+                android:layout_marginTop="50dp"
+                android:id="@+id/NumberPosts"
+                android:layout_column="2"
+                android:layout_row="0" />
+
+            <TextView
                 android:text="Number of Posts: "
                 android:layout_width="157dp"
                 android:paddingLeft="20dp"
-                android:layout_height="50dp"
+                android:layout_height="26dp"
+                android:layout_marginTop="50dp"
                 android:id="@+id/NumPosts"
                 android:layout_column="1"
-                android:layout_row="1" />
-
-            <TextView
-                android:text="10"
-                android:layout_width="157dp"
-                android:paddingLeft="10dp"
-                android:layout_height="50dp"
-                android:id="@+id/NumberPosts"
-                android:layout_column="2"
-                android:layout_row="1" />
+                android:layout_row="0" />
 
             <Button
                 android:layout_width="104dp"
-                android:layout_height="24dp"
+                android:layout_height="28dp"
                 android:layout_row="1"
                 android:text="Upload"
+                android:layout_marginLeft="20dp"
                 android:textColor="@color/white"
                 android:id="@+id/uploadprofile"
                 android:textStyle="bold"
@@ -135,7 +137,6 @@
         android:id="@+id/listviewlayout"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:background="@drawable/profilepicturebackground"
         android:layout_below="@+id/infoprofile"
 
         android:layout_alignParentStart="true">
