@@ -177,7 +177,7 @@ public class CreatePostImage  extends Fragment implements View.OnClickListener{
                                             FirebaseStorage storage = FirebaseStorage.getInstance();
                                             StorageReference storageRef = storage.getReferenceFromUrl("gs://dpsproject-85e85.appspot.com/Images/");
                                             DatabaseReference dbImageRef= dbReference.child("Image").push();
-                                            dbImageRef.setValue(new String("temp"));
+                                            dbImageRef.setValue(new String("0"));
                                             StorageReference ImageRef = storageRef.child(dbImageRef.getKey());
                                             UploadTask uploadTask = ImageRef.putBytes(bytes);
                                             uploadTask.addOnFailureListener(new OnFailureListener() {

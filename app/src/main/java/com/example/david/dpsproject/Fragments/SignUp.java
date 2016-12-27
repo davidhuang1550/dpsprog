@@ -73,8 +73,8 @@ public class SignUp extends Fragment implements View.OnClickListener {
                     sub.add("Jesus");
                     sub.add("Soccer");
                     sub.add("Uplifting");
-                    Users u = new Users(email,password, new HashMap<String,ArrayList<Post>>(),new ArrayList<String>(),
-                            new ArrayList<String>(),"",sub,fDate,0);
+                    Users u = new Users(email,password, new HashMap<String, ArrayList<String>>(),new HashMap<String, ArrayList<String>>(),
+                            new HashMap<String, ArrayList<String>>(),"",sub,fDate,0);
                     dbReference.child("Users").child(task.getResult().getUser().getUid()).setValue(u);
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.content_frame,new LogIn()).commit();

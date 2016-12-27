@@ -61,26 +61,23 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 public class navigation extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,FragmentManager.OnBackStackChangedListener{
     protected Toolbar toolbar;
-    private  String UID;
 
     DatabaseReference dbReference;
     FirebaseAuth authentication;
     FirebaseUser firebaseUser;
-    ProgressBarPresenter progressBarPresenter;
 
-    ArrayList<Post> InList;
     NavigationView navigationView;
-    private MyPostAdapter adapter;
-    long timestampfrom;
     FloatingActionButton fab;
     FloatingActionButton fab_image;
     FloatingActionButton fab_desc;
+
     FrontPage frontPage;
     String filePath;
     ArrayList<Post> postId;
     Bitmap decodedprofilepic;
     ProgressDialog pDialog;
     Menu subMenu;
+
     int currListPos;
     Users tempU;
     String SubCat;
@@ -195,53 +192,14 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
     public Toolbar getToolbar(){
         return toolbar;
     }
-    public void setUID(String uid){
-        UID=uid;
-    }
+
     public void setSubCat(String sub){
         SubCat=sub;
     }
-    public String getSubCat(){
-        return SubCat;
-    }
-    private void switchFragment(Fragment fragment){
-        android.app.FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment).addToBackStack("Tag").commit();
-    }
-    public void setTimestamp(long time){
-        timestampfrom=time;
-    }
-    public long getTimestamp(){
-        return timestampfrom;
-    }
-    public void setFrontPageAdapter(MyPostAdapter p){
-        adapter=p;
-    }
-    public MyPostAdapter getFrontPageAdapater(){
-        return adapter;
-    }
-    public void setCurrentList(ArrayList<Post> p , int currlist){
-        InList=p;
-        currListPos=currlist;
-    }
-    public int getCurrListPos(){
-        return currListPos;
-    }
-    public void addtoposts(ArrayList<Post> posts){
-        for(int i=0;i<10;i++)InList.add(posts.get(i));
-        for(Post p: posts){
-            postId.add(p);
-        }
-        adapter.notifyDataSetChanged();
-        progressBarPresenter = new ProgressBarPresenter(this,listView);
-        progressBarPresenter.hidemProgressBarFooter();
 
-    }
+
     public void setPostView(ListView l){listView=l;}
-    public ArrayList<Post> getCurrentList(){
-        return InList;
-    }
+
     @Override
     public void onBackStackChanged() {
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -407,9 +365,6 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
            // fragmentManager.beginTransaction().add(R.id.content_frame,new SearchFragment(),"search").commit();
             OptionsDialog optionsDialog = new OptionsDialog();
             optionsDialog.show(getFragmentManager(),"options Dialog");
-
-          //  SearchDialog searchDialog = new SearchDialog();
-          //  searchDialog.show(getFragmentManager(),"Search Dialog Fragment");
 
         } else if(id==R.id.signout){
             freeUserData();

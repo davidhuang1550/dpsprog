@@ -74,14 +74,13 @@
 
         </GridLayout>
     </FrameLayout>
-
-
     <FrameLayout
         android:id="@+id/listviewlayout"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:background="@color/grey"
         android:layout_below="@+id/topProfileUserSearch"
-
+        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true">
         <ListView
             android:layout_width="fill_parent"

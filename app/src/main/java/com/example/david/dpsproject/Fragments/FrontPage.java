@@ -24,6 +24,7 @@ import android.widget.ListView;
 
 import com.example.david.dpsproject.Class.Users;
 import com.example.david.dpsproject.Adapters.MyPostAdapter;
+import com.example.david.dpsproject.Presenter.DefaultProgressBarPresenter;
 import com.example.david.dpsproject.Presenter.PostPresenter;
 import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
 import com.example.david.dpsproject.R;
@@ -54,6 +55,7 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
     int totalItemCount;
     int firstVisibleItem;
     private PostPresenter postPresenter;
+    private DefaultProgressBarPresenter defaultProgressBarPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,6 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
                 nav_Menu.findItem(R.id.signout).setVisible(true);
 
             ((navigation) mActivity).ShowProgressDialog();
-              //  setPostView();
             postPresenter.setUserPost();
         }
         else if(bundle!=null){
@@ -140,7 +141,8 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
                     listView.startAnimation(animation);
 
                     if(listView.getFooterViewsCount()==0){
-                        MyPostAdapter tempAdapter= (MyPostAdapter)listView.getAdapter();
+                        HeaderViewListAdapter hlva = (HeaderViewListAdapter)listView.getAdapter();
+                        MyPostAdapter tempAdapter = (MyPostAdapter) hlva.getWrappedAdapter();
                         if(tempAdapter!=null)tempAdapter.clearData();
                         tempAdapter.notifyDataSetChanged();
                     }else{

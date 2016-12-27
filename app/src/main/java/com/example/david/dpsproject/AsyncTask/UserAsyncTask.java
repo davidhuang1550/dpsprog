@@ -48,9 +48,6 @@ public class UserAsyncTask extends AsyncTask<Void,Void,Void>{
 
     public void UserAsyncTask(navigation activity){
         mActivity=activity;
-       // authentication=auth;
-     //   dbReference=dbRef;
-      //  firebaseUser=firebaseU;
     }
     public void ShowProgressDialog() { // progress
         if (pDialog == null) {

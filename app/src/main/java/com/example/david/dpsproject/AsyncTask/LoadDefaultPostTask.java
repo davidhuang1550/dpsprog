@@ -12,6 +12,9 @@ import android.widget.Toast;
 import com.example.david.dpsproject.Adapters.MyPostAdapter;
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.Users;
+import com.example.david.dpsproject.Model.PostModel;
+import com.example.david.dpsproject.Presenter.DefaultProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,20 +37,28 @@ public class LoadDefaultPostTask extends AsyncTask<Void,Void,Void>{
 
     private ArrayList<String> category;
     private ArrayList<Post> posts;
-    private View myView;
-    private MyPostAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
     private long old_time_diff;
     private long time_diff;
-
-    public LoadDefaultPostTask(Activity activity,DatabaseReference dbf,View view,SwipeRefreshLayout l,ArrayList<String> cat){
+    private MyPostAdapter adapter;
+    private ArrayList<Post> p;
+    private ListView listView;
+    private DefaultProgressBarPresenter defaultProgressBarPresenter;
+    private PostModel postModel;
+    public LoadDefaultPostTask(Activity activity, DatabaseReference dbf, View view, SwipeRefreshLayout l,
+                               ArrayList<String> cat, DefaultProgressBarPresenter progress, ListView le, MyPostAdapter adapt, ArrayList<Post> po, PostModel postmod){
         mActivity=activity;
         databaseReference=dbf;
         category=cat;
-        myView=view;
+        adapter=adapt;
         posts= new ArrayList<Post>();
         refreshLayout=l;
+        p = po;
+        listView=le;
+        defaultProgressBarPresenter = progress;
+        postModel=postmod;
     }
+
 
     @Override
     protected Void doInBackground(Void... voids) {
@@ -82,7 +93,7 @@ public class LoadDefaultPostTask extends AsyncTask<Void,Void,Void>{
                         });
                     }
                     old_time_diff=time_diff;
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } while (posts.size()<10);
 
         }catch (InterruptedException e){
@@ -94,20 +105,18 @@ public class LoadDefaultPostTask extends AsyncTask<Void,Void,Void>{
             Animation animation = AnimationUtils.loadAnimation(mActivity, R.anim.splashfadeoutleft);
             Collections.shuffle(posts);
 
-            ArrayList<Post> p = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
                 p.add(posts.get(i));
             }
-            ListView listView = (ListView) myView.findViewById(R.id.postview);
-            adapter = new MyPostAdapter(mActivity, p);
+            defaultProgressBarPresenter.hidemProgressBarFooter();
+            ((navigation)mActivity).HideProgressDialog();
             listView.startAnimation(animation);
-            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
             if (refreshLayout != null) refreshLayout.setRefreshing(false);
-            ((navigation) mActivity).HideProgressDialog();
-            ((navigation) mActivity).setTimestamp(old_time_diff);
-            ((navigation) mActivity).setPostId(posts);
-            ((navigation) mActivity).setFrontPageAdapter(adapter);
-            ((navigation) mActivity).setCurrentList(p, 10);
+            postModel.setTimestamp(old_time_diff);
+            postModel.setPostId(posts);
+            postModel.setCurrentList(p, 10);
+
 
     }
 

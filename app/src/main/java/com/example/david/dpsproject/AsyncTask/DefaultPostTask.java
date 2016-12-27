@@ -2,18 +2,10 @@ package com.example.david.dpsproject.AsyncTask;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.View;
-import android.widget.ListView;
 import android.widget.Toast;
-
-import com.example.david.dpsproject.Adapters.MyPostAdapter;
 import com.example.david.dpsproject.Class.Post;
-import com.example.david.dpsproject.Class.Users;
+import com.example.david.dpsproject.Model.PostModel;
 import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
-import com.example.david.dpsproject.navigation;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
@@ -36,14 +28,16 @@ public class DefaultPostTask extends AsyncTask<Void,Void,Void> {
     private long time_diff;
     private ProgressBarPresenter progressBarPresenter;
     private int count;
+    private PostModel postModel;
 
-    public DefaultPostTask(Activity activity,DatabaseReference dbf,ArrayList<String> cat,long startime, ProgressBarPresenter p){
+    public DefaultPostTask(Activity activity, DatabaseReference dbf, ArrayList<String> cat, long startime, ProgressBarPresenter p, PostModel pomodel){
         mActivity=activity;
         databaseReference=dbf;
         category=cat;
         time_diff=startime;
         posts= new ArrayList<>();
         progressBarPresenter = p;
+        postModel=pomodel;
     }
 
     @Override
@@ -94,7 +88,7 @@ public class DefaultPostTask extends AsyncTask<Void,Void,Void> {
         }
 
              if(count<7){
-                ((navigation)mActivity).addtoposts(posts);
+                postModel.addtoposts(posts);
              }
 
         return null;

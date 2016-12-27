@@ -23,23 +23,7 @@ public class Profile {
         Subs=posts;
         Bookmarks=bookmarks;
     }
-   /* public void getSubstring(String Post){
-        boolean create= true;
-        int i=0;
-        for (SubString s: getSubs()){
-            if(s.equals(sub)){
-                create = false;
-                Subs.get(i).addPost(Post);
-            }
-            i++;
-        }
-        if(create){
-            SubString temp = new SubString(new ArrayList<String>());
-            temp.addPost(Post);
-            Subs.add(temp);
-        }
 
-    }*/
     public ArrayList<SubString> getBookmarks() {
         return Bookmarks;
     }

@@ -5,12 +5,14 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.david.dpsproject.AsyncTask.ProfileTask;
+import com.example.david.dpsproject.AsyncTask.getUserPostTask;
 import com.example.david.dpsproject.Class.Users;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
@@ -30,6 +32,7 @@ public class SearchUserModel {
     private Activity mActivity;
     private TextView joindate;
     private TextView numPost;
+    private Users users;
     private  com.github.siyamed.shapeimageview.CircularImageView profileP;
     public SearchUserModel(DatabaseReference db, View view, String user, Activity activity){
         databaseReference=db;
@@ -46,7 +49,7 @@ public class SearchUserModel {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot!=null){
-                    Users users= null;
+                    users= null;
                     for(DataSnapshot d:dataSnapshot.getChildren()){
                         users= d.getValue(Users.class);
                     }
@@ -61,6 +64,7 @@ public class SearchUserModel {
                     }
                     joindate.setText(users.getJoinDate());
                     numPost.setText(Integer.toString(users.getNumOfPosts()));
+                    loadListView();
 
                 }
 
@@ -74,18 +78,19 @@ public class SearchUserModel {
 
     }
 
- /*   public void loadListView(){
-        final ProfileTask getProfilePost = new ProfileTask("posts","Posts", myView,mActivity,databaseReference,firebaseUser);
+    public void loadListView(){
+        final getUserPostTask getProfilePost = new getUserPostTask(databaseReference,users,myView,mActivity);
         getProfilePost.execute();
-        Handler handler.postDelayed(new Runnable() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if(getProfilePost.getStatus()== AsyncTask.Status.RUNNING){
                     getProfilePost.cancel(true);
-                    HideProgressDialog();
+
                     Toast.makeText(mActivity,"Nothing was found",Toast.LENGTH_SHORT).show();
                 }
             }
         },5000);
-    }*/
+    }
 }

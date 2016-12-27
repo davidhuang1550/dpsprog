@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.david.dpsproject.Adapters.MyPostAdapter;
@@ -12,7 +13,9 @@ import com.example.david.dpsproject.AsyncTask.DefaultPostTask;
 import com.example.david.dpsproject.AsyncTask.LoadDefaultPostTask;
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.Users;
+import com.example.david.dpsproject.Presenter.DefaultProgressBarPresenter;
 import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
+import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -24,7 +27,6 @@ import java.util.ArrayList;
  */
 
 public class PostModel {
-    private ArrayList<Post> posts;
     private Activity mActivity;
     private DatabaseReference dbReference;
     private View myView;
@@ -33,16 +35,28 @@ public class PostModel {
     private FirebaseUser firebaseUser;
     private ProgressBarPresenter progressBarPresenter;
     private ArrayList<String> Category;
-
+    private DefaultProgressBarPresenter defaultProgressBarPresenter;
+    private ListView listView;
+    private MyPostAdapter adapter;
+    private ArrayList<Post> p;
+    private long timestampfrom;
+    private ArrayList<Post> InList;
+    private ArrayList<Post> postId;
+    private int currListPos;
     public PostModel(Activity activity , DatabaseReference db, View view, SwipeRefreshLayout refresh, Users u, FirebaseUser fbu){
-        posts =new ArrayList<Post>();
         mActivity=activity;
         dbReference=db;
         myView=view;
         refreshLayout=refresh;
         user=u;
         firebaseUser=fbu;
+        p= new ArrayList<>();
         Category= new ArrayList<>();
+        listView = (ListView) myView.findViewById(R.id.postview);
+        adapter = new MyPostAdapter(mActivity, p);
+        listView.setAdapter(adapter);
+        defaultProgressBarPresenter = new DefaultProgressBarPresenter(mActivity,listView);
+        postId= new ArrayList<Post>();
     }
 
     public void setDefaultPostView(){
@@ -50,10 +64,11 @@ public class PostModel {
         category.add("Jesus");
         category.add("Soccer");
         category.add("Uplifting");
-        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity,dbReference,myView,refreshLayout,category);
+        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity,dbReference,
+                myView,refreshLayout,category,defaultProgressBarPresenter,listView,adapter,p,this);
 
         if(refreshLayout!=null){
-            if(!refreshLayout.isRefreshing())((navigation) mActivity).ShowProgressDialog();
+            if(!refreshLayout.isRefreshing())defaultProgressBarPresenter.showmProgressBarFooter();
         }
         loadDefaultPostTask.execute();
 
@@ -63,7 +78,7 @@ public class PostModel {
             public void run() {
                 if(loadDefaultPostTask.getStatus()== AsyncTask.Status.RUNNING){
                     loadDefaultPostTask.cancel(true);
-                    ((navigation) mActivity).HideProgressDialog();
+                    defaultProgressBarPresenter.hidemProgressBarFooter();
                     Toast.makeText(mActivity, "Connection too slow", Toast.LENGTH_SHORT).show();
 
                 }
@@ -75,10 +90,11 @@ public class PostModel {
         Category.add(cat);
     }
     public void setSearchView(){
-        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity,dbReference,myView,refreshLayout,Category);
+        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity,dbReference,
+                myView,refreshLayout,Category,defaultProgressBarPresenter,listView,adapter,p,this);
 
         if(refreshLayout!=null){
-            if(!refreshLayout.isRefreshing())((navigation) mActivity).ShowProgressDialog();
+            if(!refreshLayout.isRefreshing())defaultProgressBarPresenter.showmProgressBarFooter();
         }
         loadDefaultPostTask.execute();
 
@@ -88,7 +104,7 @@ public class PostModel {
             public void run() {
                 if(loadDefaultPostTask.getStatus()== AsyncTask.Status.RUNNING){
                     loadDefaultPostTask.cancel(true);
-                    ((navigation) mActivity).HideProgressDialog();
+                    defaultProgressBarPresenter.hidemProgressBarFooter();
                     Toast.makeText(mActivity, "Connection too slow", Toast.LENGTH_SHORT).show();
 
                 }
@@ -98,16 +114,17 @@ public class PostModel {
     public void setPostView(){
 
         user= ((navigation)mActivity).getworkingUser();
-        final LoadDefaultPostTask loadPostTask= new LoadDefaultPostTask(mActivity,dbReference,myView,refreshLayout, user.getSubcategory());
-        loadPostTask.execute();
+        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity,dbReference,
+                myView,refreshLayout,user.getSubcategory(),defaultProgressBarPresenter,listView,adapter,p,this);
+        loadDefaultPostTask.execute();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(loadPostTask.getStatus()==AsyncTask.Status.RUNNING){
+                if(loadDefaultPostTask.getStatus()==AsyncTask.Status.RUNNING){
                     if(firebaseUser!=null) {
-                        loadPostTask.cancel(true);
-                        ((navigation) mActivity).HideProgressDialog();
+                        loadDefaultPostTask.cancel(true);
+                        defaultProgressBarPresenter.hidemProgressBarFooter();
                         Toast.makeText(mActivity, "Connection too slow", Toast.LENGTH_SHORT).show();
 
                     }else{
@@ -121,22 +138,57 @@ public class PostModel {
     public void setProgressBarPresenter(ProgressBarPresenter progressBar){
         progressBarPresenter=progressBar;
     }
+    public void setPostId(ArrayList<Post> s){
+        postId=s;
+    }
+    public ArrayList<Post> getPostId(){
+        return postId;
+    }
+    public void setTimestamp(long time){
+        timestampfrom=time;
+    }
+    public long getTimestamp(){
+        return timestampfrom;
+    }
+
+    public void setCurrentList(ArrayList<Post> p , int currlist){
+        InList=p;
+        currListPos=currlist;
+    }
+    public void setCurrListPos(int num){
+        currListPos=num;
+    }
+
+    public int getCurrListPos(){
+        return currListPos;
+    }
+    public void addtoposts(ArrayList<Post> posts){
+        for(int i=0;i<10;i++)InList.add(posts.get(i));
+        for(Post p: posts){
+            postId.add(p);
+        }
+        adapter.notifyDataSetChanged();
+        progressBarPresenter = new ProgressBarPresenter(mActivity,listView);
+        progressBarPresenter.hidemProgressBarFooter();
+
+    }
+    public ArrayList<Post> getCurrentList(){
+        return InList;
+    }
     public void addmoreItems() {
         try{
-            MyPostAdapter adapter = ((navigation) mActivity).getFrontPageAdapater();
-            ArrayList<Post> posts = ((navigation) mActivity).getPostId();
-            ArrayList<Post> currPost = ((navigation) mActivity).getCurrentList();
-            int tempNum = ((navigation) mActivity).getCurrListPos();
-            if ((posts.size() - 10) >= tempNum) {
+
+            int tempNum = getCurrListPos();
+            if ((postId.size() - 10) >= tempNum) {
                 for (int i = tempNum; i < tempNum + 10; i++) {
-                    currPost.add(posts.get(i));
+                    InList.add(postId.get(i));
                 }
                 adapter.notifyDataSetChanged();
-                ((navigation) mActivity).setCurrListPos(tempNum + 10);
+                setCurrListPos(tempNum + 10);
                 progressBarPresenter.hidemProgressBarFooter();
             } else {
                 if (user != null) {
-                    final DefaultPostTask getMorePost = new DefaultPostTask(mActivity, dbReference, user.getSubcategory(), ((navigation) mActivity).getTimestamp(), progressBarPresenter);
+                    final DefaultPostTask getMorePost = new DefaultPostTask(mActivity, dbReference, user.getSubcategory(), getTimestamp(), progressBarPresenter,this);
                     getMorePost.execute();
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -156,7 +208,7 @@ public class PostModel {
                     sub.add("Jesus");
                     sub.add("Soccer");
                     sub.add("Uplifting");
-                    final DefaultPostTask getMorePost = new DefaultPostTask(mActivity, dbReference, sub, ((navigation) mActivity).getTimestamp(), progressBarPresenter);
+                    final DefaultPostTask getMorePost = new DefaultPostTask(mActivity, dbReference, sub, getTimestamp(), progressBarPresenter,this);
                     getMorePost.execute();
 
                     Handler handler = new Handler();

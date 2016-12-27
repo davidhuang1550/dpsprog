@@ -22,9 +22,9 @@ public class Users {
 
     private int NumOfPosts;
 
-    private Map<String,ArrayList<Post>> Posts;
-    private ArrayList<String>Bookmarks;
-    private ArrayList<String> Viewed;
+    private HashMap<String, ArrayList<String>> Posts;
+    private HashMap<String, ArrayList<String>>Bookmarks;
+    private HashMap<String, ArrayList<String>> Viewed;
 
     private ArrayList<String> Subcategory;
     //private Profile profile;
@@ -33,13 +33,12 @@ public class Users {
 
 
     public  Users(){
-     //   profile = new Profile();
-   //     Posts=new Map<String,ArrayList<Post>>();
-        Bookmarks=new ArrayList<String>();
-        Viewed=new ArrayList<String>();
+        Posts=new HashMap<String, ArrayList<String>>();
+        Bookmarks=new HashMap<String, ArrayList<String>>();
+        Viewed=new HashMap<String, ArrayList<String>>();
     }
-    public Users(String u, String p,Map<String,ArrayList<Post>> s,ArrayList<String> b,
-                 ArrayList<String> v, String pic,ArrayList<String> subc, String join,int numPost) {
+    public Users(String u, String p,HashMap<String, ArrayList<String>> s,HashMap<String, ArrayList<String>> b,
+                 HashMap<String, ArrayList<String>> v, String pic,ArrayList<String> subc, String join,int numPost) {
         userName = u;
         password = p;
         Posts=s;
@@ -55,7 +54,6 @@ public class Users {
     public Users Users(Users users){
 
         Users u = new Users();
-        //u.setProfile(users.getProfile());
         u.setPassword(users.getPassword());
         u.setUserName(users.getUserName());
 
@@ -91,27 +89,27 @@ public class Users {
     public void setPicture(String picture) {
         Picture = picture;
     }
-    public Map<String,ArrayList<Post>> getPosts() {
+    public HashMap<String, ArrayList<String>> getPosts() {
         return Posts;
     }
 
-    public void setPosts(Map<String,ArrayList<Post>> posts) {
+    public void setPosts(HashMap<String, ArrayList<String>> posts) {
         Posts = posts;
     }
 
-    public ArrayList<String> getBookmarks() {
+    public HashMap<String, ArrayList<String>> getBookmarks() {
         return Bookmarks;
     }
 
-    public void setBookmarks(ArrayList<String> bookmarks) {
+    public void setBookmarks(HashMap<String, ArrayList<String>> bookmarks) {
         Bookmarks = bookmarks;
     }
 
-    public ArrayList<String> getViewed() {
+    public HashMap<String, ArrayList<String>> getViewed() {
         return Viewed;
     }
 
-    public void setViewed(ArrayList<String> viewed) {
+    public void setViewed(HashMap<String, ArrayList<String>> viewed) {
         Viewed = viewed;
     }
     public String getPassword() {

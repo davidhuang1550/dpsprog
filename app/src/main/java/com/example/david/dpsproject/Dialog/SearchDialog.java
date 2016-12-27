@@ -9,10 +9,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.david.dpsproject.Class.Post;
-import com.example.david.dpsproject.Fragments.SearchUser;
+import com.example.david.dpsproject.Fragments.SearchPostFragment;
+import com.example.david.dpsproject.Fragments.SearchUserFragment;
 import com.example.david.dpsproject.R;
-import com.example.david.dpsproject.Fragments.Searchpage;
+import com.example.david.dpsproject.Fragments.SearchCategoryFragment;
 
 /**
  * Created by xlhuang3 on 11/8/2016.
@@ -48,16 +48,19 @@ public class SearchDialog extends DialogFragment {
                     if (!key.equals("")) {
                         Bundle bundle = new Bundle();
                         if(key.equals("Post")){
-
+                            SearchPostFragment searchUser = new SearchPostFragment();
+                            bundle.putString("SearchKey",editText.getText().toString());
+                            searchUser.setArguments(bundle);
+                            getFragmentManager().beginTransaction().replace(R.id.content_frame, searchUser).commit();
                         }
                         else if(key.equals("User")){
-                            SearchUser searchUser = new SearchUser();
+                            SearchUserFragment searchUser = new SearchUserFragment();
                             bundle.putString("username",editText.getText().toString());
                             searchUser.setArguments(bundle);
                             getFragmentManager().beginTransaction().replace(R.id.content_frame, searchUser).commit();
                         }
                         else if(key.equals("Sub")){
-                            Searchpage searchpage = new Searchpage();
+                            SearchCategoryFragment searchpage = new SearchCategoryFragment();
                             bundle.putString("Sub", editText.getText().toString());
                             searchpage.setArguments(bundle);
                             getFragmentManager().beginTransaction().replace(R.id.content_frame, searchpage).commit();
