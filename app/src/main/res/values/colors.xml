@@ -11,4 +11,27 @@
     <color name="darkOrange">#ff8c00</color>
     <color name="backgroundblue">#3366cc</color>
     <color name="backgroundbluetouch">#4e75c4</color>
+    <color name="blue">#0066cc</color>
+    <color name="green">#00cc66</color>
+
+
+    <!-- pie chart color-->
+    <color name="color1">#D98880</color>
+    <color name="color2">#76D7C4</color>
+    <color name="color3">#BB8FCE</color>
+    <color name="color4">#F9E79F</color>
+    <color name="color5">#F4F6F7</color>
+    <color name="color6">#A9CCE3</color>
+    <color name="color7">#66ff66</color>
+    <color name="color8">#00ffff</color>
+    <color name="color9">#ffffcc</color>
+    <color name="color10">#ffccff</color>
+    <color name="color11">#99ccff</color>
+    <color name="color12">#ff6699</color>
+    <color name="color13">#ccff66</color>
+    <color name="color14">#cc66ff</color>
+    <color name="color15">#ccffcc</color>
+
+
+
 </resources>

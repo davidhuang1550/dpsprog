@@ -9,7 +9,7 @@ import android.widget.Toast;
 import com.example.david.dpsproject.Adapters.MyPostAdapter;
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.Users;
-import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.ProgressBarPresenter;
 import com.example.david.dpsproject.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

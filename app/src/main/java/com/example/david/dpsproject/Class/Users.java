@@ -59,6 +59,9 @@ public class Users {
 
         return u;
     }
+    public void IncNumOfPosts(){
+        NumOfPosts++;
+    }
     public int getNumOfPosts() {
         return NumOfPosts;
     }
@@ -143,6 +146,55 @@ public class Users {
         byte[] decodedString = Base64.decode(getPicture(), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         return decodedByte;
+    }
+    public void addToHashMapPost(String sub, String post){
+        ArrayList<String> posts = Posts.get(sub);
+        if(post!=null){
+            posts.add(post);
+        }
+        else{
+            ArrayList<String> tempPost = new ArrayList<>();
+            tempPost.add(post);
+            Posts.put(sub,tempPost);
+        }
+    }
+    public boolean findArrayListPost(String sub,String post){
+        ArrayList<String> posts = Viewed.get(sub);
+        boolean returnval=true;
+        if(posts!=null){
+            if(posts.contains(post)){
+                returnval=false;
+            }
+        }
+        return returnval;
+    }
+    public ArrayList<String> AddToViewed(String sub,String key){
+        ArrayList<String> templist=Viewed.get(sub);
+        if(templist==null){
+            templist= new ArrayList<>();
+        }
+         templist.add(key);
+        return templist;
+    }
+    public ArrayList<String> AddToBookMarked(String sub,String key){
+        ArrayList<String> templist=Bookmarks.get(sub);
+        if(templist==null){
+            templist= new ArrayList<>();
+        }
+        templist.add(key);
+        return templist;
+    }
+    public ArrayList<String> removeFromBookMarked(String sub,String key){
+        ArrayList<String> templist=Bookmarks.get(sub);
+        if(templist!=null)templist.remove(key);
+        return templist;
+    }
+    public boolean findBookMark(String sub, String key){
+        ArrayList<String> templist=Bookmarks.get(sub);
+        if(templist!=null){
+            return (templist.contains(key))?true:false;
+        }
+        return false;
     }
 
 }

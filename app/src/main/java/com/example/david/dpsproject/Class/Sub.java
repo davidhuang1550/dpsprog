@@ -1,7 +1,5 @@
 package com.example.david.dpsproject.Class;
 
-import com.example.david.dpsproject.Class.Post;
-
 import java.util.ArrayList;
 
 /**

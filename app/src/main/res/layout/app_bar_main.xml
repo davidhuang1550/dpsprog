@@ -21,8 +21,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/compse_desc"
         android:layout_width="wrap_content"
@@ -33,6 +31,7 @@
         app:backgroundTint="@color/orange"
         android:src="@drawable/type"
         android:background="#fb8200" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/compse_images"
         android:layout_width="wrap_content"
@@ -43,6 +42,7 @@
         android:src="@drawable/images"
         app:backgroundTint="@color/orange"
         android:background="#fb8200" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/compose"
         android:layout_width="wrap_content"
@@ -52,5 +52,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/pencil"
         android:background="#fb8200" />
+
+    <include layout="@layout/content_main" />
 
 </android.support.design.widget.CoordinatorLayout>

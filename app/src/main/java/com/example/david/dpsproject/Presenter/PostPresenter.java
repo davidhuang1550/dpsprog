@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.david.dpsproject.Class.Users;
 import com.example.david.dpsproject.Model.PostModel;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.ProgressBarPresenter;
 
 /**
  * Created by david on 2016-12-20.
@@ -18,8 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 public class PostPresenter {
     private PostModel postModel;
 
-    public PostPresenter(Activity activity , DatabaseReference db, View view, SwipeRefreshLayout refresh, Users u, FirebaseUser fbu){
-        postModel = new PostModel(activity,db,view,refresh,u,fbu);
+    public PostPresenter(Activity activity , DataBaseConnectionsPresenter dataBaseConnectionsPresenter, View view, SwipeRefreshLayout refresh, Users u){
+        postModel = new PostModel(activity, dataBaseConnectionsPresenter,view,refresh,u);
     }
     public void setDefaultPost(){
         postModel.setDefaultPostView();
@@ -35,7 +34,9 @@ public class PostPresenter {
     public void setProgressBarPresenter(ProgressBarPresenter progressBarPresenter){
         postModel.setProgressBarPresenter(progressBarPresenter);
     }
-
+    public void enableDisplayBySearch(){
+        postModel.enableDisplayBySearch();
+    }
     public void setSearchPost(){
         try {
             postModel.setSearchView();

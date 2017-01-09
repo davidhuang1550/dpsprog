@@ -2,7 +2,6 @@ package com.example.david.dpsproject.Fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -11,29 +10,20 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.david.dpsproject.AsyncTask.ProfileTask;
-import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.Users;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
 
 /**
  * Created by david on 2016-11-16.
@@ -43,15 +33,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private TextView History;
     private TextView Bookmarks;
     private Button Upload;
-
-    FirebaseAuth authentication;
-    DatabaseReference dbReference;
-    FirebaseUser firebaseUser;
-
-    ArrayList<Post> ptemp;
-    private ListView listView;
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
     private Activity mActivity;
-    ProgressDialog pDialog;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,19 +54,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         Bookmarks = (TextView) myView.findViewById(R.id.Tbookmark);
         Upload = (Button)myView.findViewById(R.id.uploadprofile);
 
-        authentication= FirebaseAuth.getInstance(); // get instance of my firebase console
-        dbReference = FirebaseDatabase.getInstance().getReference(); // access to database
-        firebaseUser = authentication.getCurrentUser();
-
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.compose);
-        if(fab!=null)fab.hide();
-
+        dataBaseConnectionsPresenter =((navigation)mActivity).getDataBaseConnectionsPresenter();
+        ((navigation)mActivity).hideFab();
 
         TextView joindate = (TextView)myView.findViewById(R.id.MemberSincedate);
         TextView numPost = (TextView)myView.findViewById(R.id.NumberPosts);
 
 
-        if(firebaseUser!=null){
+        if(dataBaseConnectionsPresenter.getFirebaseUser()!=null){
             Bitmap b =((navigation)mActivity).getprofilepic();
             if(b!=null){
                 final com.github.siyamed.shapeimageview.CircularImageView profileP = (com.github.siyamed.shapeimageview.CircularImageView) myView.findViewById(R.id.profileImage);
@@ -126,29 +105,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         return myView;
     }
 
-
-
-    public void ShowProgressDialog() { // progress
-        if (pDialog == null) {
-            pDialog = new ProgressDialog(getContext());
-            pDialog.setMessage("Loading Posts");
-            pDialog.setIndeterminate(true);
-        }
-        pDialog.show();
-    }
-    public void HideProgressDialog() {
-        if(pDialog!=null && pDialog.isShowing()){
-            pDialog.dismiss();
-        }
-    }
-    public boolean checkReadExternalPermission(){
-        String permission = "android.permission.READ_EXTERNAL_STORAGE"; // get permissions
-        int res= mActivity.checkCallingOrSelfPermission(permission);
-        return (res== PackageManager.PERMISSION_GRANTED);
-    }
-    private void requestForSpecificPermission() {
-        ActivityCompat.requestPermissions(mActivity, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
-    }
     public void onDestroy() {
         ViewGroup container = (ViewGroup)mActivity.findViewById(R.id.content_frame);
         container.removeAllViews();
@@ -174,42 +130,44 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         Handler handler = new Handler();
         switch (v.getId()){
             case R.id.Tposts:
-                final ProfileTask getProfilePost = new ProfileTask("posts","Posts", myView,mActivity,dbReference,firebaseUser);
+                final ProfileTask getProfilePost = new ProfileTask("posts","Posts", myView,mActivity,
+                        dataBaseConnectionsPresenter.getDbReference(),dataBaseConnectionsPresenter.getFirebaseUser());
                 getProfilePost.execute();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         if(getProfilePost.getStatus()==AsyncTask.Status.RUNNING){
                             getProfilePost.cancel(true);
-                            HideProgressDialog();
+                            ((navigation)mActivity).HideProgressDialog();
                             Toast.makeText(mActivity,"Nothing was found",Toast.LENGTH_SHORT).show();
                         }
                     }
                 },5000);
                 break;
             case R.id.Tbookmark:
-                final ProfileTask getProfilePost_bookmark = new ProfileTask("posts","Bookmarks", myView,mActivity,dbReference,firebaseUser);
+                final ProfileTask getProfilePost_bookmark = new ProfileTask("posts","Bookmarks", myView,mActivity,
+                        dataBaseConnectionsPresenter.getDbReference(),dataBaseConnectionsPresenter.getFirebaseUser());
                 getProfilePost_bookmark.execute();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         if(getProfilePost_bookmark.getStatus()==AsyncTask.Status.RUNNING){
                             getProfilePost_bookmark.cancel(true);
-                            HideProgressDialog();
+                            ((navigation)mActivity).HideProgressDialog();
                             Toast.makeText(mActivity,"Nothing was found",Toast.LENGTH_SHORT).show();
                         }
                     }
                 },5000);
                 break;
             case R.id.uploadprofile:
-                if (checkReadExternalPermission()) {
+                if (((navigation)mActivity).checkReadExternalPermission()) {
                     final Intent galleryIntent = new Intent();
                     galleryIntent.setType("image/*");
                     galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
                     mActivity.startActivityForResult(galleryIntent, 2);
                 }
                 else{
-                    requestForSpecificPermission();
+                    ((navigation)mActivity).requestForSpecificPermission();
                 }
                 break;
 

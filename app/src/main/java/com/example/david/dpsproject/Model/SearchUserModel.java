@@ -3,7 +3,6 @@ package com.example.david.dpsproject.Model;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.View;
@@ -11,14 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.david.dpsproject.AsyncTask.ProfileTask;
 import com.example.david.dpsproject.AsyncTask.getUserPostTask;
 import com.example.david.dpsproject.Class.Users;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
 import com.example.david.dpsproject.R;
-import com.example.david.dpsproject.navigation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 /**
@@ -26,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
  */
 
 public class SearchUserModel {
-    private DatabaseReference databaseReference;
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
     private View myView;
     private String username;
     private Activity mActivity;
@@ -34,8 +31,8 @@ public class SearchUserModel {
     private TextView numPost;
     private Users users;
     private  com.github.siyamed.shapeimageview.CircularImageView profileP;
-    public SearchUserModel(DatabaseReference db, View view, String user, Activity activity){
-        databaseReference=db;
+    public SearchUserModel(DataBaseConnectionsPresenter db, View view, String user, Activity activity){
+        dataBaseConnectionsPresenter =db;
         myView=view;
         username=user;
         joindate = (TextView)myView.findViewById(R.id.MemberSincedate);
@@ -45,7 +42,7 @@ public class SearchUserModel {
 
     }
     public void getUser(){
-        databaseReference.child("Users").orderByChild("userName").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
+        dataBaseConnectionsPresenter.getDbReference().child("Users").orderByChild("userName").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot!=null){
@@ -79,7 +76,7 @@ public class SearchUserModel {
     }
 
     public void loadListView(){
-        final getUserPostTask getProfilePost = new getUserPostTask(databaseReference,users,myView,mActivity);
+        final getUserPostTask getProfilePost = new getUserPostTask(dataBaseConnectionsPresenter.getDbReference(),users,myView,mActivity);
         getProfilePost.execute();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

@@ -1,7 +1,5 @@
 package com.example.david.dpsproject;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
@@ -10,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -19,10 +16,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.app.FragmentManager;
-import android.util.Base64;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -36,58 +33,51 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.david.dpsproject.Adapters.MyPostAdapter;
-import com.example.david.dpsproject.Class.Post;
+import com.example.david.dpsproject.AsyncTask.UserAsyncTask;
 import com.example.david.dpsproject.Class.Users;
 import com.example.david.dpsproject.Dialog.OptionsDialog;
-import com.example.david.dpsproject.Dialog.PleaseLogin;
-import com.example.david.dpsproject.Dialog.SearchDialog;
-import com.example.david.dpsproject.Fragments.CreatePost;
-import com.example.david.dpsproject.Fragments.CreatePostImage;
 import com.example.david.dpsproject.Fragments.FrontPage;
-import com.example.david.dpsproject.Fragments.LogIn;
+import com.example.david.dpsproject.Fragments.Authentication.LogIn;
 import com.example.david.dpsproject.Fragments.ProfileFragment;
-import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.FabPresenter;
+import com.example.david.dpsproject.Presenter.SortByPresenter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 public class navigation extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,FragmentManager.OnBackStackChangedListener{
     protected Toolbar toolbar;
+    private NavigationView navigationView;
 
-    DatabaseReference dbReference;
-    FirebaseAuth authentication;
-    FirebaseUser firebaseUser;
+    private FabPresenter fabPresenter;
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
+    private FrontPage frontPage;
+    private String filePath;
+    private  Bitmap decodedprofilepic;
+    private  ProgressDialog pDialog;
 
-    NavigationView navigationView;
-    FloatingActionButton fab;
-    FloatingActionButton fab_image;
-    FloatingActionButton fab_desc;
+    private Menu subMenu;
+    private MenuItem subscribeId;
+    private MenuItem unsubscribId;
+    private MenuItem SortBy;
+    private Menu nav_Menu;
 
-    FrontPage frontPage;
-    String filePath;
-    ArrayList<Post> postId;
-    Bitmap decodedprofilepic;
-    ProgressDialog pDialog;
-    Menu subMenu;
+    private  View CategoryView;
+    private  Users tempU;
+    private String SubCat;
+    private SortByPresenter sortByPresenter;
 
-    int currListPos;
-    Users tempU;
-    String SubCat;
 
-    TextView name;
-    MenuItem subscribeId;
-    MenuItem unsubscribId;
-    Uri imageUpload =null;
-    Bitmap decodedByte;
-    ListView  listView;
+    private Uri imageUpload;
+    private ListView  listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,66 +85,17 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        authentication= FirebaseAuth.getInstance(); // get instance of my firebase console
-        dbReference = FirebaseDatabase.getInstance().getReference(); // access to database
-        firebaseUser = authentication.getCurrentUser();
+        dataBaseConnectionsPresenter = new DataBaseConnectionsPresenter();
 
-        fab = (FloatingActionButton) findViewById(R.id.compose);
-        fab_image = (FloatingActionButton) findViewById(R.id.compse_images);
-        fab_desc = (FloatingActionButton) findViewById(R.id.compse_desc);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.compose);
+        FloatingActionButton  fab_image = (FloatingActionButton) findViewById(R.id.compse_images);
+        FloatingActionButton fab_desc = (FloatingActionButton) findViewById(R.id.compse_desc);
         fab_desc.setSize(FloatingActionButton.SIZE_MINI);
         fab_image.setSize(FloatingActionButton.SIZE_MINI);
 
+        fabPresenter= new FabPresenter(fab,fab_image,fab_desc,dataBaseConnectionsPresenter,this);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                firebaseUser = authentication.getCurrentUser();
-               if(firebaseUser!=null){ // show and hide compose
-                   if(fab_image.getVisibility()==View.VISIBLE && fab_desc.getVisibility()==view.VISIBLE){
-                       fab_desc.hide();
-                       fab_image.hide();
-                   }
-                   else{
-                       fab_desc.show();
-                       fab_image.show();
-                   }
-
-               }
-                else{
-                   Bundle bundle = new Bundle();
-                   bundle.putString("Message","You must be logged in to create post");
-                   PleaseLogin pleaseLogin = new PleaseLogin();
-                   pleaseLogin.setArguments(bundle);
-                   pleaseLogin.show(getFragmentManager(),"Alert Dialog Fragment");
-               }
-
-
-
-            }
-        });
-        fab_image.setOnClickListener(new View.OnClickListener(){ // go to create image
-            @Override
-            public void onClick(View view) {
-                fab_desc.hide();
-                fab_image.hide();
-                CreatePostImage createPost = new CreatePostImage();
-                FragmentTransaction transaction= getFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(R.animator.enter_anim,R.animator.exit_anim,R.animator.enter_anim_back,R.animator.exit_anime_back);
-                transaction.add(R.id.content_frame,createPost).addToBackStack("Posts").commit();
-            }
-        });
-        fab_desc.setOnClickListener(new View.OnClickListener(){ // go to create desc
-            public void onClick(View view) {
-                fab_desc.hide();
-                fab_image.hide();
-                CreatePost createPost = new CreatePost();
-                FragmentTransaction transaction= getFragmentManager().beginTransaction();
-                transaction.setCustomAnimations(R.animator.enter_anim,R.animator.exit_anim,R.animator.enter_anim_back,R.animator.exit_anime_back);
-                transaction.add(R.id.content_frame,createPost).addToBackStack("Posts").commit();
-            }
-        });
-
+        imageUpload =null;
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -162,14 +103,14 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        postId= new ArrayList<Post>();
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         subMenu=navigationView.getMenu();
+        nav_Menu = navigationView.getMenu();
 
         frontPage= new FrontPage();
         Bundle bundle = new Bundle();
-        if(firebaseUser!=null){
+        if(dataBaseConnectionsPresenter.getFirebaseUser()!=null){
             getUser();
             bundle.putString("user","true");
             frontPage.setArguments(bundle);
@@ -182,6 +123,9 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
 
         }
 
+    }
+    public DataBaseConnectionsPresenter getDataBaseConnectionsPresenter(){
+        return dataBaseConnectionsPresenter;
     }
     public void setprofilepic(Bitmap p){
         decodedprofilepic=p;
@@ -218,17 +162,18 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
         super.onBackPressed();
         showFab();
     }
-    public void setPostId(ArrayList<Post> s){
-        postId=s;
-    }
-    public ArrayList<Post> getPostId(){
-        return postId;
-    }
     public void showFab(){
 
-        if(fab_image!=null)fab_image.hide();
-        if(fab_desc!=null)fab_desc.hide();
-        if(fab!=null)fab.show();
+        fabPresenter.showFab();
+    }
+    public void hideFab(){
+        fabPresenter.hideFab();
+    }
+    public void HideSort(){
+        SortBy.setVisible(false);
+    }
+    public void ShowSort(){
+        SortBy.setVisible(true);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -238,6 +183,8 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
         subscribeId.setVisible(false);
         unsubscribId=menu.getItem(1);
         unsubscribId.setVisible(false);
+        SortBy=menu.getItem(2);
+        SortBy.setVisible(false);
         return true;
     }
     public void showUnsubscribe(){
@@ -260,7 +207,7 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
     }
 
     private void pushsubtodatabase(){
-        dbReference.child("Users").child(firebaseUser.getUid()).child("Subcategory").setValue(tempU.getSubcategory());
+        dataBaseConnectionsPresenter.getDbReference().child("Users").child(dataBaseConnectionsPresenter.getUID()).child("Subcategory").setValue(tempU.getSubcategory());
     }
     public void reload_menu(){
         Menu menu=getSubMenu();
@@ -293,59 +240,69 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        final ProgressDialog mprogressDialog = ProgressDialog.show(this, "Please wait","Saving Changes", true);
+
         if(SubCat!=null) {
             if (id == R.id.subscribe) {
-
-                        ModifySub(SubCat,0);
-
-                                reload_menu();
-                                showUnsubscribe();
-                                hidesubscribe();
-                                mprogressDialog.dismiss();
-
-
+                ModifySub(SubCat,0);
+                reload_menu();
+                showUnsubscribe();
+                hidesubscribe();
 
             } else if (id == R.id.Unsubscribe) {
-
-                                reload_menu();
-                                ModifySub(SubCat,1);
-                                showSubscribe();
-                                hideUnsubscribe();
-                                mprogressDialog.dismiss();
+                reload_menu();
+                ModifySub(SubCat,1);
+                showSubscribe();
+                hideUnsubscribe();
+            }
+            else{
+                listView = (ListView)findViewById(R.id.postview);
+                sortByPresenter = new SortByPresenter(dataBaseConnectionsPresenter,SubCat,this,listView,CategoryView);
+                if(id==R.id.SortByYes){
+                    sortByPresenter.SortByYes();
+                    sortByPresenter.sort();
+                } else if(id==R.id.SortByNo){
+                    sortByPresenter.SortByNo();
+                    sortByPresenter.sort();
+                } else if(id==R.id.SortByResponses){
+                    sortByPresenter.SortByResponse();
+                    sortByPresenter.sort();
+                }
 
             }
         }
 
         return super.onOptionsItemSelected(item);
     }
-    public void Load_User_profile(){
-
-        firebaseUser = authentication.getCurrentUser();
-        getUser();
-    }
     public void remove_nav_image(){
         View Layout = (View)findViewById(R.id.navPic);
         Layout.setBackgroundResource(R.drawable.default_desktop);
     }
     public void freeUserData(){
-        Menu nav_Menu = navigationView.getMenu();
-        nav_Menu.findItem(R.id.login).setVisible(true);// set logout and login respectively
-        nav_Menu.findItem(R.id.signout).setVisible(false);
-        nav_Menu.findItem(R.id.profile).setVisible(false);
+        hideFab();
+        setLogintrue();
         TextView name = (TextView) findViewById(R.id.headText); // remove menu name
         name.setText("");
         remove_menu();
         remove_nav_image();
+        tempU=null;
 
     }
-    public void setCurrListPos(int num){
-        currListPos=num;
+    public void setLogintrue(){
+        nav_Menu.findItem(R.id.login).setVisible(true);// set logout and login respectively
+        nav_Menu.findItem(R.id.signout).setVisible(false);
+        nav_Menu.findItem(R.id.profile).setVisible(false);
     }
+    public void setLoginFalse(){
+        nav_Menu.findItem(R.id.login).setVisible(false);
+        nav_Menu.findItem(R.id.profile).setVisible(true);
+        nav_Menu.findItem(R.id.signout).setVisible(true);
+    }
+
+    public void setCategoryView(View categoryView) {
+        CategoryView = categoryView;
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -378,7 +335,7 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
     }
 
     public void setFirebaseUser(FirebaseUser firebaseUsers){
-        firebaseUser=firebaseUsers;
+        dataBaseConnectionsPresenter.setFirebaseUser(firebaseUsers);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -399,77 +356,7 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
     }
     public void getUser(){
 
-       final AsyncTask<Void, Void, Void> getuserName = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                ShowProgressDialog();
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    do {
-
-                        dbReference.child("Users").child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                try {
-                                    tempU = dataSnapshot.getValue(Users.class);
-                                    name = (TextView) findViewById(R.id.headText);
-
-                                } catch (DatabaseException e) {
-                                    Toast.makeText(getApplicationContext(), "something went wrong", Toast.LENGTH_SHORT).show();
-                                    e.printStackTrace();
-                                }
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                        //   Thread.sleep(1000);
-                    } while (name != null && tempU != null);
-                    Thread.sleep(1000);
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-             //   HideProgressDialog();
-                if (tempU != null) {
-                    name.setText(tempU.getUserName());
-                    final View layout = (View) findViewById(R.id.navPic);
-                    if (tempU.getPicture() != "" && tempU.getPicture() != null) {
-                        byte[] decodedString = Base64.decode(tempU.getPicture(), Base64.DEFAULT);
-                        decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        setprofilepic(decodedByte);
-                        layout.setBackground(new BitmapDrawable(getResources(), decodedByte));
-                    }
-                    Menu menu=getSubMenu();
-
-                    if(menu!=null) {
-                        final ArrayList<String> subcat = tempU.getSubcategory();
-                        for (int i = 0; i < subcat.size(); i++) {
-                            menu.add(R.id.second_nav, Menu.NONE, 0, subcat.get(i));
-
-                        }
-                    }
-                }
-                else{
-                    freeUserData();
-                    FirebaseAuth.getInstance().signOut();
-                    HideProgressDialog();
-                }
-                FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().add(R.id.content_frame,frontPage,"FrontPage").commit();
-            }
-
-        };
-
+        final UserAsyncTask getuserName = new UserAsyncTask(this, dataBaseConnectionsPresenter.getDbReference(), dataBaseConnectionsPresenter.getFirebaseUser(),frontPage);
         Handler userhandler = new Handler();
 
         getuserName.execute();
@@ -483,12 +370,22 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
                     Toast.makeText(getApplicationContext(),"Error has occured ",Toast.LENGTH_SHORT).show();
                 }
             }
-        };//,5000);
+        };
         userhandler.postDelayed(userthread,5000);
     }
     public void setUser(Users user){
         tempU=user;
     }
+
+    public boolean checkReadExternalPermission(){
+        String permission = "android.permission.READ_EXTERNAL_STORAGE"; // get permissions
+        int res= this.checkCallingOrSelfPermission(permission);
+        return (res== PackageManager.PERMISSION_GRANTED);
+    }
+    public void requestForSpecificPermission() {
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+    }
+
     public Menu getSubMenu(){
         return subMenu;
     }
@@ -518,29 +415,35 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bitMap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                     byte[] bytes = stream.toByteArray();
-                    final String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-
-                    dbReference.child("Users").child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReferenceFromUrl("gs://dpsproject-85e85.appspot.com/Images/");
+                    DatabaseReference dbImageRef= dataBaseConnectionsPresenter.getDbReference().child("Image").push();
+                    dbImageRef.setValue(new String("0"));
+                    StorageReference ImageRef = storageRef.child(dbImageRef.getKey());
+                    UploadTask uploadTask = ImageRef.putBytes(bytes);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Users users = dataSnapshot.getValue(Users.class);
-                            users.setPicture(base64Image);
-                            dbReference.child("Users").child(firebaseUser.getUid()).child("picture").setValue(base64Image);
+                        public void onFailure(@NonNull Exception exception) {
+
                         }
-
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                         }
                     });
-                }
+                tempU.setPicture(dbImageRef.getKey());
+                dataBaseConnectionsPresenter.getDbReference().child("Users").child(dataBaseConnectionsPresenter.getUID()).child("picture").setValue(dbImageRef.getKey());
+            }
+
 
         }
         else{
             Toast.makeText(this,"Something went wrong",Toast.LENGTH_SHORT).show();
         }
     }
+
     public void ShowProgressDialog() { // progress
         if (pDialog == null) {
             pDialog = new ProgressDialog(this);

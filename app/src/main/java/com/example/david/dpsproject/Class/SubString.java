@@ -27,12 +27,4 @@ public class SubString {
         this.posts = posts;
     }
 
-  //  public String getsubName() {
-    //    return subName;
-  //  }
-
-   // public void setsubName(String subName) {
-     //   subName = subName;
- //   }
-
 }

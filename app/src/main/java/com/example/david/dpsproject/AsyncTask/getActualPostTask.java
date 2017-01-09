@@ -1,20 +1,17 @@
 package com.example.david.dpsproject.AsyncTask;
 
 import android.os.AsyncTask;
-import android.widget.Adapter;
-import android.widget.ListView;
 
 import com.example.david.dpsproject.Adapters.MyPostAdapter;
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.SearchPost;
-import com.example.david.dpsproject.Presenter.DefaultProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DefaultProgressBarPresenter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by david on 2016-12-26.

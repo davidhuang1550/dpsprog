@@ -6,7 +6,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-import com.example.david.dpsproject.Fragments.LogIn;
+import com.example.david.dpsproject.Fragments.Authentication.LogIn;
 import com.example.david.dpsproject.R;
 
 /**

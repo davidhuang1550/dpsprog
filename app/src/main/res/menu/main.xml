@@ -11,4 +11,29 @@
         android:orderInCategory="100"
         android:title="Unsubscribe"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/SortBy"
+        android:orderInCategory="100"
+        android:title="Sort By"
+        app:showAsAction="never">
+           <!-- sub menu sort by-->
+            <menu>
+                <item android:id="@+id/SortByYes"
+                    android:orderInCategory="100"
+                    android:title="Yes Votes"
+                    app:showAsAction="never"/>
+                <item android:id="@+id/SortByNo"
+                    android:orderInCategory="100"
+                    android:title="No Votes"
+                    app:showAsAction="never"/>
+                <item android:id="@+id/SortByResponses"
+                    android:orderInCategory="100"
+                    android:title="Responses"
+                    app:showAsAction="never"/>
+            </menu>
+
+
+        </item>
+
+
 </menu>

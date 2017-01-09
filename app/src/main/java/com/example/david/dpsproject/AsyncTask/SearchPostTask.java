@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.widget.ListView;
 
-import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.SearchPost;
 import com.example.david.dpsproject.Model.SearchPostModel;
-import com.example.david.dpsproject.Presenter.DefaultProgressBarPresenter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,15 +19,13 @@ import java.util.ArrayList;
 
 public class SearchPostTask extends AsyncTask<Void,Void,Void> {
     private DatabaseReference databaseReference;
-    private String searchString;private Activity mActivity;
-    private ListView mListView;
+    private String searchString;
     private ArrayList<SearchPost> ptemp;
     private SearchPostModel searchPostModel;
-    public SearchPostTask(DatabaseReference db, String s, Activity activity, ListView listView,SearchPostModel searchPostm){
+    public SearchPostTask(DatabaseReference db, String s,SearchPostModel searchPostm){
         databaseReference=db;
         searchString=s;
-        mActivity=activity;
-        mListView=listView;
+
         ptemp= new ArrayList<>();
         searchPostModel=searchPostm;
     }

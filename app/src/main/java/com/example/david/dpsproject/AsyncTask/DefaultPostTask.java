@@ -3,9 +3,10 @@ package com.example.david.dpsproject.AsyncTask;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.widget.Toast;
+
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Model.PostModel;
-import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.ProgressBarPresenter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
@@ -40,10 +41,6 @@ public class DefaultPostTask extends AsyncTask<Void,Void,Void> {
         postModel=pomodel;
     }
 
-    @Override
-    protected void onPreExecute() {
-        progressBarPresenter.showmProgressBarFooter();
-    }
 
     @Override
     protected Void doInBackground(Void... voids) {

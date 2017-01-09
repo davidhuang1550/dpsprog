@@ -9,10 +9,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.example.david.dpsproject.Fragments.SearchPostFragment;
-import com.example.david.dpsproject.Fragments.SearchUserFragment;
+import com.example.david.dpsproject.Fragments.Search.SearchPostFragment;
+import com.example.david.dpsproject.Fragments.Search.SearchUserFragment;
 import com.example.david.dpsproject.R;
-import com.example.david.dpsproject.Fragments.SearchCategoryFragment;
+import com.example.david.dpsproject.Fragments.Search.SearchCategoryFragment;
 
 /**
  * Created by xlhuang3 on 11/8/2016.

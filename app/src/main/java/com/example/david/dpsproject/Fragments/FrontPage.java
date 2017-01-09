@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,23 +15,15 @@ import android.view.Menu;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
-import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 
 import com.example.david.dpsproject.Class.Users;
-import com.example.david.dpsproject.Adapters.MyPostAdapter;
-import com.example.david.dpsproject.Presenter.DefaultProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DefaultProgressBarPresenter;
 import com.example.david.dpsproject.Presenter.PostPresenter;
-import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.ProgressBarPresenter;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by david on 2016-10-25.
@@ -42,18 +33,12 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
     View myView;
 
     private static ProgressBarPresenter progressBarPresenter;
-    FirebaseAuth authentication;
-    DatabaseReference dbReference;
-    FloatingActionButton fab;
     NavigationView navigationView;
-    FirebaseUser firebaseUser;
     SwipeRefreshLayout refreshLayout;
     Activity mActivity;
     ListView listView;
     Users user;
-    int visibleItemCount;
-    int totalItemCount;
-    int firstVisibleItem;
+    DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
     private PostPresenter postPresenter;
     private DefaultProgressBarPresenter defaultProgressBarPresenter;
 
@@ -64,42 +49,7 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
         fragmentManager.addOnBackStackChangedListener(this);
         mActivity=getActivity();
     }
-    @Override
-    public void onStart() {
-        super.onStart();
-        Bundle bundle = getArguments();
-        navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
-        Menu nav_Menu = navigationView.getMenu();
 
-        if(firebaseUser!=null) {
-
-                nav_Menu.findItem(R.id.login).setVisible(false);
-                nav_Menu.findItem(R.id.profile).setVisible(true);
-                nav_Menu.findItem(R.id.signout).setVisible(true);
-
-            ((navigation) mActivity).ShowProgressDialog();
-            postPresenter.setUserPost();
-        }
-        else if(bundle!=null){
-            if (bundle.get("user").equals("true")) {
-                postPresenter.setUserPost();
-            } else if (bundle.get("user").equals("false")) {
-                nav_Menu.findItem(R.id.login).setVisible(true);
-                nav_Menu.findItem(R.id.profile).setVisible(false);
-                nav_Menu.findItem(R.id.signout).setVisible(false);
-              //  setDefaultPostView();
-                postPresenter.setDefaultPost();
-            }
-        }
-
-        else{
-            //setDefaultPostView();
-            postPresenter.setDefaultPost();
-            nav_Menu.findItem(R.id.login).setVisible(true);
-            nav_Menu.findItem(R.id.profile).setVisible(false);
-            nav_Menu.findItem(R.id.signout).setVisible(false);
-        }
-    }
     @Override
     public void onStop() {
         super.onStop();
@@ -115,100 +65,54 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        dataBaseConnectionsPresenter = ((navigation)mActivity).getDataBaseConnectionsPresenter();
         mActivity.setTitle("Front Page");
         myView = inflater.inflate(R.layout.front_page,container,false);
         ((navigation)mActivity).hideAllSubscribe();
         refreshLayout = (SwipeRefreshLayout)myView.findViewById(R.id.swiperefresh);
         ((navigation)mActivity).setPostView(listView);
 
-        authentication = FirebaseAuth.getInstance();
-        dbReference = FirebaseDatabase.getInstance().getReference(); // access to database
-        firebaseUser = authentication.getCurrentUser();
-
         listView = (ListView)myView.findViewById(R.id.postview);
-        postPresenter = new PostPresenter(mActivity , dbReference, myView, refreshLayout, user, firebaseUser);
+        postPresenter = new PostPresenter(mActivity , dataBaseConnectionsPresenter, myView, refreshLayout, user);
         progressBarPresenter= new ProgressBarPresenter(mActivity, listView);
         postPresenter.setProgressBarPresenter(progressBarPresenter);
 
-
-
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-                if (listView != null){
-                    final Animation animation = AnimationUtils.loadAnimation(mActivity, R.anim.splashfadeout);
-                    listView.startAnimation(animation);
-
-                    if(listView.getFooterViewsCount()==0){
-                        HeaderViewListAdapter hlva = (HeaderViewListAdapter)listView.getAdapter();
-                        MyPostAdapter tempAdapter = (MyPostAdapter) hlva.getWrappedAdapter();
-                        if(tempAdapter!=null)tempAdapter.clearData();
-                        tempAdapter.notifyDataSetChanged();
-                    }else{
-                        progressBarPresenter.hidemProgressBarFooter();
-                        progressBarPresenter.hideErrorBar();
-                        HeaderViewListAdapter hlva = (HeaderViewListAdapter)listView.getAdapter();
-                        MyPostAdapter postAdapter = (MyPostAdapter) hlva.getWrappedAdapter();
-                        postAdapter.clearData();
-                        postAdapter.notifyDataSetChanged();
-                    }
-
-
-                    refreshLayout.setRefreshing(true);
-                    if(user!=null)  postPresenter.setUserPost();
-                    else postPresenter.setDefaultPost();
-                }
-                else{
-                    refreshLayout.setRefreshing(true);
-                    if(user!=null)  postPresenter.setUserPost();
-                    else postPresenter.setDefaultPost();
-                }
-
-
-            }
-        });
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                if(firstVisibleItem+visibleItemCount == totalItemCount && totalItemCount!=0)
-                {
-                    if(progressBarPresenter.getPin()==false) {
-                        if(listView.getFooterViewsCount()==1){
-                            progressBarPresenter.hideErrorBar();
-                        }
-                        postPresenter.addMoreItems();
-                    }
-                }
-            }
-
-            public void onScroll(AbsListView view, int firstVisible,
-                                 int visibleItem, int totalItem) {
-                visibleItemCount=visibleItem;
-                totalItemCount=totalItem;
-                firstVisibleItem=firstVisible;
-
-            }
-        });
-
-        fab = (FloatingActionButton) mActivity.findViewById(R.id.compose);
-        FloatingActionButton fab_image = (FloatingActionButton) mActivity.findViewById(R.id.compse_images);
-        FloatingActionButton fab_desc = (FloatingActionButton) mActivity.findViewById(R.id.compse_desc);
-        if(fab_image!=null)fab_image.hide();
-        if(fab_desc!=null)fab_desc.hide();
-        if(fab!=null)fab.show();
+        ((navigation)mActivity).showFab();
+        init();
 
 
         return myView;
     }
+    public void init(){
+        Bundle bundle = getArguments();
+        navigationView = (NavigationView)myView.findViewById(R.id.nav_view);
+        if(((navigation)mActivity).getworkingUser()!=null) {
+            ((navigation)mActivity).setLoginFalse();
+            postPresenter.setUserPost();
+        }
+        else if(bundle!=null){
+            if (bundle.get("user").equals("true")) {
+                ((navigation)mActivity).setLoginFalse();
+                postPresenter.setUserPost();
+            } else if (bundle.get("user").equals("false")) {
+                ((navigation)mActivity).setLogintrue();
 
+                postPresenter.setDefaultPost();
+            }
+        }
+
+        else{
+            postPresenter.setDefaultPost();
+            ((navigation)mActivity).setLogintrue();
+        }
+    }
     @Override
     public void onResume() {
         super.onResume();
+      /*  navigationView = (NavigationView) myView.findViewById(R.id.nav_view);
         Menu nav_Menu = navigationView.getMenu();
-        if(nav_Menu!=null)nav_Menu.findItem(R.id.search).setVisible(true);
-        if(fab!=null)fab.show(); // when in front page you must show compose option
+        if(nav_Menu!=null)nav_Menu.findItem(R.id.search).setVisible(true);*/
+        ((navigation)mActivity).showFab(); // when in front page you must show compose option
     }
 
     @Override

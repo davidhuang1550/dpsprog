@@ -9,40 +9,48 @@
     android:weightSum="1"
     >
 
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textAlignment="center"
-        android:id="@+id/PostTitle"
-        android:textSize="40dp"
-        android:background="@drawable/customborder"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/PostDesc"
-        android:layout_weight="0.06" />
-
-    <ImageView
+        android:layout_height="match_parent"
+        >
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:scaleType="fitCenter"
-        android:clickable="true"
-        android:background="@drawable/backgroundtranscolor"
-        android:adjustViewBounds="true"
-        android:layout_height="200dp"
-        android:id="@+id/imageView" />
+        android:layout_height="match_parent">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:id="@+id/PostTitle"
+                android:textSize="25dp"
+                android:layout_marginBottom="2dp"
+                android:background="@drawable/headerdivider"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignEnd="@+id/PostDesc"
+                android:layout_weight="0.06" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:scaleType="fitCenter"
+                android:clickable="true"
+                android:adjustViewBounds="true"
+                android:layout_height="200dp"
+                android:layout_below="@+id/PostTitle"
+                android:id="@+id/imageView" />
 
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="193dp"
-        android:id="@+id/replaceable_frame"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/imageView"
-        android:layout_weight="0.52">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/replaceable_frame"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/imageView">
 
 
 
-    </FrameLayout>
+            </FrameLayout>
+    </RelativeLayout>
 
+    </ScrollView>
 
 </LinearLayout>

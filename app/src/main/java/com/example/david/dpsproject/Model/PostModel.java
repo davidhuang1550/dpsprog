@@ -5,6 +5,10 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -13,12 +17,11 @@ import com.example.david.dpsproject.AsyncTask.DefaultPostTask;
 import com.example.david.dpsproject.AsyncTask.LoadDefaultPostTask;
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.Users;
-import com.example.david.dpsproject.Presenter.DefaultProgressBarPresenter;
-import com.example.david.dpsproject.Presenter.ProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DefaultProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.ProgressBarPresenter;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
@@ -28,11 +31,10 @@ import java.util.ArrayList;
 
 public class PostModel {
     private Activity mActivity;
-    private DatabaseReference dbReference;
     private View myView;
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
     private SwipeRefreshLayout refreshLayout;
     private Users user;
-    private FirebaseUser firebaseUser;
     private ProgressBarPresenter progressBarPresenter;
     private ArrayList<String> Category;
     private DefaultProgressBarPresenter defaultProgressBarPresenter;
@@ -43,13 +45,15 @@ public class PostModel {
     private ArrayList<Post> InList;
     private ArrayList<Post> postId;
     private int currListPos;
-    public PostModel(Activity activity , DatabaseReference db, View view, SwipeRefreshLayout refresh, Users u, FirebaseUser fbu){
+    private Boolean DisplayBySearch;
+    int visibleItemCount;
+    int totalItemCount;
+    int firstVisibleItem;
+    public PostModel(Activity activity , DataBaseConnectionsPresenter dataBase, View view, SwipeRefreshLayout refresh, Users u){
         mActivity=activity;
-        dbReference=db;
         myView=view;
         refreshLayout=refresh;
         user=u;
-        firebaseUser=fbu;
         p= new ArrayList<>();
         Category= new ArrayList<>();
         listView = (ListView) myView.findViewById(R.id.postview);
@@ -57,15 +61,82 @@ public class PostModel {
         listView.setAdapter(adapter);
         defaultProgressBarPresenter = new DefaultProgressBarPresenter(mActivity,listView);
         postId= new ArrayList<Post>();
+        DisplayBySearch=false;
+        dataBaseConnectionsPresenter =dataBase;
+
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                if (listView != null){
+                    final Animation animation = AnimationUtils.loadAnimation(mActivity, R.anim.splashfadeout);
+                    listView.startAnimation(animation);
+
+                    if(listView.getFooterViewsCount()==0){
+                        try {
+                            HeaderViewListAdapter hlva = (HeaderViewListAdapter) listView.getAdapter();
+                            MyPostAdapter tempAdapter = (MyPostAdapter) hlva.getWrappedAdapter();
+                            if (tempAdapter != null) tempAdapter.clearData();
+                            tempAdapter.notifyDataSetChanged();
+                        }catch(ClassCastException e){
+                            MyPostAdapter tempAdapter = (MyPostAdapter)listView.getAdapter();
+                            if (tempAdapter != null) tempAdapter.clearData();
+                            tempAdapter.notifyDataSetChanged();
+                        }
+                    }else{
+                        progressBarPresenter.hidemProgressBarFooter();
+                        progressBarPresenter.hideErrorBar();
+                        HeaderViewListAdapter hlva = (HeaderViewListAdapter)listView.getAdapter();
+                        MyPostAdapter postAdapter = (MyPostAdapter) hlva.getWrappedAdapter();
+                        postAdapter.clearData();
+                        postAdapter.notifyDataSetChanged();
+                    }
+
+
+                    refreshLayout.setRefreshing(true);
+                    if(user!=null&&DisplayBySearch==false)  setPostView();
+                    else setDefaultPostView();
+                }
+                else{
+                    refreshLayout.setRefreshing(true);
+                    if(user!=null&&DisplayBySearch==false)  setPostView();
+                    else setDefaultPostView();
+                }
+
+
+            }
+        });
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                if(firstVisibleItem+visibleItemCount == totalItemCount && totalItemCount!=0)
+                {
+                    if(progressBarPresenter.getPin()==false) {
+                        if(listView.getFooterViewsCount()==1){
+                            progressBarPresenter.hideErrorBar();
+                        }
+                        progressBarPresenter.showmProgressBarFooter();
+                        addmoreItems();
+                    }
+                }
+            }
+
+            public void onScroll(AbsListView view, int firstVisible,
+                                 int visibleItem, int totalItem) {
+                visibleItemCount=visibleItem;
+                totalItemCount=totalItem;
+                firstVisibleItem=firstVisible;
+
+            }
+        });
     }
 
     public void setDefaultPostView(){
-        ArrayList<String> category= new ArrayList<String>();
-        category.add("Jesus");
-        category.add("Soccer");
-        category.add("Uplifting");
-        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity,dbReference,
-                myView,refreshLayout,category,defaultProgressBarPresenter,listView,adapter,p,this);
+        setCategoryDefault();
+        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity, dataBaseConnectionsPresenter.getDbReference(),
+                myView,refreshLayout, Category,defaultProgressBarPresenter,listView,adapter,p,this);
 
         if(refreshLayout!=null){
             if(!refreshLayout.isRefreshing())defaultProgressBarPresenter.showmProgressBarFooter();
@@ -85,12 +156,24 @@ public class PostModel {
             }
         },5000);
     }
+    public void enableDisplayBySearch(){
+        DisplayBySearch=true;
+    }
+    public void setUserCategory(){
+        Category=user.getSubcategory();
+    }
     public void setCategory(String cat){
         Category.clear();
         Category.add(cat);
     }
+    public void setCategoryDefault(){
+        Category.clear();
+        Category.add("Jesus");
+        Category.add("Soccer");
+        Category.add("Uplifting");
+    }
     public void setSearchView(){
-        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity,dbReference,
+        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity, dataBaseConnectionsPresenter.getDbReference(),
                 myView,refreshLayout,Category,defaultProgressBarPresenter,listView,adapter,p,this);
 
         if(refreshLayout!=null){
@@ -112,19 +195,25 @@ public class PostModel {
         },5000);
     }
     public void setPostView(){
-
         user= ((navigation)mActivity).getworkingUser();
-        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity,dbReference,
-                myView,refreshLayout,user.getSubcategory(),defaultProgressBarPresenter,listView,adapter,p,this);
+        setUserCategory();
+        final LoadDefaultPostTask loadDefaultPostTask= new LoadDefaultPostTask(mActivity, dataBaseConnectionsPresenter.getDbReference(),
+                myView,refreshLayout,Category,defaultProgressBarPresenter,listView,adapter,p,this);
+
+        if(refreshLayout!=null){
+            if(!refreshLayout.isRefreshing())defaultProgressBarPresenter.showmProgressBarFooter();
+        }
+
         loadDefaultPostTask.execute();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if(loadDefaultPostTask.getStatus()==AsyncTask.Status.RUNNING){
-                    if(firebaseUser!=null) {
+                    if(dataBaseConnectionsPresenter.getFirebaseUser()!=null) {
                         loadDefaultPostTask.cancel(true);
                         defaultProgressBarPresenter.hidemProgressBarFooter();
+                        ((navigation)mActivity).HideProgressDialog();
                         Toast.makeText(mActivity, "Connection too slow", Toast.LENGTH_SHORT).show();
 
                     }else{
@@ -140,9 +229,6 @@ public class PostModel {
     }
     public void setPostId(ArrayList<Post> s){
         postId=s;
-    }
-    public ArrayList<Post> getPostId(){
-        return postId;
     }
     public void setTimestamp(long time){
         timestampfrom=time;
@@ -172,9 +258,6 @@ public class PostModel {
         progressBarPresenter.hidemProgressBarFooter();
 
     }
-    public ArrayList<Post> getCurrentList(){
-        return InList;
-    }
     public void addmoreItems() {
         try{
 
@@ -187,28 +270,7 @@ public class PostModel {
                 setCurrListPos(tempNum + 10);
                 progressBarPresenter.hidemProgressBarFooter();
             } else {
-                if (user != null) {
-                    final DefaultPostTask getMorePost = new DefaultPostTask(mActivity, dbReference, user.getSubcategory(), getTimestamp(), progressBarPresenter,this);
-                    getMorePost.execute();
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (getMorePost.getStatus() == AsyncTask.Status.RUNNING) {
-                                getMorePost.cancel(true);
-                                progressBarPresenter.hidemProgressBarFooter();
-                                progressBarPresenter.showErrorBar();
-
-
-                            }
-                        }
-                    }, 5000);
-                } else {
-                    ArrayList<String> sub = new ArrayList<String>();
-                    sub.add("Jesus");
-                    sub.add("Soccer");
-                    sub.add("Uplifting");
-                    final DefaultPostTask getMorePost = new DefaultPostTask(mActivity, dbReference, sub, getTimestamp(), progressBarPresenter,this);
+                    final DefaultPostTask getMorePost = new DefaultPostTask(mActivity, dataBaseConnectionsPresenter.getDbReference(), Category, getTimestamp(), progressBarPresenter,this);
                     getMorePost.execute();
 
                     Handler handler = new Handler();
@@ -224,7 +286,6 @@ public class PostModel {
                             }
                         }
                     }, 5000);
-                }
 
             }
         }catch (NullPointerException e){

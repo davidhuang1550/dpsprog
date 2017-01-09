@@ -2,6 +2,7 @@ package com.example.david.dpsproject.Class;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by david on 2016-10-28.
@@ -14,16 +15,18 @@ public class Post implements Serializable {
     private String Title;
     private String key;
     private String Description;
-
     private Long Timestamp;
     private String SubN;
+    private int totalPost;
     private String Image;
     private ArrayList<Comment> comments;
+    private HashMap<String,Integer> piechart;
     public Post(){
 
     }
 
-    public Post(String key, int no, int yes, String posterId, String title, ArrayList<Comment> comments, String description,String image,Long T,String sn){
+    public Post(String key, int no, int yes, String posterId, String title, ArrayList<Comment> comments, String description,String image,
+                Long T,String sn,int total,HashMap<String,Integer> pie){
 
         this.key = key;
         No = no;
@@ -35,23 +38,43 @@ public class Post implements Serializable {
         Description = description;
         Image=image;
         SubN=sn;
+        totalPost=total;
+        piechart=pie;
     }
     public Post(String posterId,String title,String description,Long T,String sn){
-        Yes=0;No=0;
+        totalPost=0;
         PosterId=posterId;
         Title=title;
         Timestamp=T;
         Description=description;
         SubN=sn;
     }
-    public Post(String posterId,String title,String description,String image, Long T,String sn){
-        Yes=0;No=0;
+    public Post(String posterId,String title,Long T,String sn){
+        totalPost=0;
         PosterId=posterId;
         Title=title;
         Timestamp=T;
-        Description=description;
-        Image=image;
         SubN=sn;
+    }
+    public HashMap<String, Integer> getPiechart() {
+        return piechart;
+    }
+
+    public void setYesNo(){
+        Yes=0;No=0;
+    }
+    public void setPiechart(HashMap<String, Integer> piechart) {
+        this.piechart = piechart;
+    }
+    public int getTotalPost() {
+        return totalPost;
+    }
+
+    public void setTotalPost(int totalPost) {
+        this.totalPost = totalPost;
+    }
+    public void incTotalPost(){
+        totalPost++;
     }
     public String getImage() {
         return Image;

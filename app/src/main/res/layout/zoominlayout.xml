@@ -4,7 +4,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:padding="20px"
     android:clickable="true"
-    android:background="@drawable/backgroundtranscolor"
+    android:background="@color/black"
     android:layout_height="match_parent">
 
     <ImageView

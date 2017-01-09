@@ -11,17 +11,16 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.david.dpsproject.Adapters.MyPostAdapter;
+import com.example.david.dpsproject.AsyncTask.SearchPostGetMoreTask;
 import com.example.david.dpsproject.AsyncTask.SearchPostTask;
 import com.example.david.dpsproject.AsyncTask.getActualPostTask;
-import com.example.david.dpsproject.AsyncTask.getUserPostTask;
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.SearchPost;
-import com.example.david.dpsproject.Presenter.DefaultProgressBarPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DefaultProgressBarPresenter;
 import com.example.david.dpsproject.R;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by david on 2016-12-26.
@@ -34,22 +33,22 @@ public class SearchPostModel {
     private DefaultProgressBarPresenter defaultProgressBarPresenter;
     private ArrayList<Post> posts;
     private MyPostAdapter myPostAdapter;
-    private DatabaseReference databaseReference;
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
     private View myView;
     private int position;
     private String SearchString;
     private Activity mActivity;
     private SwipeRefreshLayout refreshLayout;
 
-    public SearchPostModel(DatabaseReference db,View view,String s,Activity activity){
+    public SearchPostModel(DataBaseConnectionsPresenter dataBase, View view, String s, Activity activity){
         searchPosts = new ArrayList<>();
         posts = new ArrayList<>();
-        databaseReference=db;
+        dataBaseConnectionsPresenter =dataBase;
         position=0;
         myView=view;
         SearchString=s;
         mActivity=activity;
-        listView =(ListView)myView.findViewById(R.id.listView);
+        listView =(ListView)myView.findViewById(R.id.postview);
         myPostAdapter = new MyPostAdapter(mActivity,posts);
         listView.setAdapter(myPostAdapter);
         defaultProgressBarPresenter = new DefaultProgressBarPresenter(mActivity,listView);
@@ -65,31 +64,35 @@ public class SearchPostModel {
                     listView.startAnimation(animation);
                     myPostAdapter.clearData();
                     myPostAdapter.notifyDataSetChanged();
-                    refreshLayout.setRefreshing(true);
                     getFirstView();
                 }
                 else{
-                    refreshLayout.setRefreshing(true);
                     getFirstView();
                 }
             }
         });
+
     }
 
     public void setSearchPosts(ArrayList<SearchPost> s){
-        searchPosts=s;
-        setKey(searchPosts.get(searchPosts.size()-1).getKey());
+        try {
+            searchPosts = s;
+            setKey(searchPosts.get(searchPosts.size() - 1).getKey());
+        }catch (Exception e){
+            Toast.makeText(mActivity,"Nothing was found",Toast.LENGTH_SHORT).show();
+        }
     }
     public void addSearchPost(ArrayList<SearchPost> search){
         for(SearchPost s:search){
             searchPosts.add(s);
         }
-        Key=searchPosts.get(search.size()-1).getKey();
+        setKey(searchPosts.get(search.size()-1).getKey());
     }
 
     public void getFirstView(){
+        position=0;
         defaultProgressBarPresenter.showmProgressBarFooter();
-        final SearchPostTask searchPostTask = new SearchPostTask(databaseReference,SearchString,mActivity,listView,this);
+        final SearchPostTask searchPostTask = new SearchPostTask(dataBaseConnectionsPresenter.getDbReference(),SearchString,this);
         searchPostTask.execute();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -110,7 +113,7 @@ public class SearchPostModel {
     public void LoadMore(){
         if(searchPosts.size()>=position){
 
-            final getActualPostTask searchPostTask = new getActualPostTask(databaseReference, defaultProgressBarPresenter,searchPosts,myPostAdapter,posts,position);
+            final getActualPostTask searchPostTask = new getActualPostTask(dataBaseConnectionsPresenter.getDbReference(), defaultProgressBarPresenter,searchPosts,myPostAdapter,posts,position);
             searchPostTask.execute();
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -126,7 +129,19 @@ public class SearchPostModel {
             position+=10;
         }
         else{
-
+            defaultProgressBarPresenter.showmProgressBarFooter();
+            final SearchPostGetMoreTask searchPostGetMoreTask = new SearchPostGetMoreTask(dataBaseConnectionsPresenter.getDbReference(),SearchString,this,getKey());
+            searchPostGetMoreTask.execute();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(searchPostGetMoreTask.getStatus()== AsyncTask.Status.RUNNING){
+                        searchPostGetMoreTask.cancel(true);
+                        Toast.makeText(mActivity,"Nothing was found",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            },5000);
         }
     }
 

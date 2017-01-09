@@ -13,7 +13,10 @@ public class SearchPost {
     public SearchPost(){
 
     }
-
+    public SearchPost(String c , String t){
+        Category=c;
+        title=t;
+    }
     public SearchPost(String s, String c, String t){
         key=s;
         Category=c;
