@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DPSPROJECTTest-master-master.iml" filepath="$PROJECT_DIR$/DPSPROJECTTest-master-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dpsprog.iml" filepath="$PROJECT_DIR$/dpsprog.iml" />
     </modules>
   </component>
 </project>

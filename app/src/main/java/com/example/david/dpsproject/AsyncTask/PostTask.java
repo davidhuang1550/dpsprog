@@ -7,7 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.example.david.dpsproject.Class.Post;
-import com.example.david.dpsproject.Fragments.VoteBarFrame;
+import com.example.david.dpsproject.Fragments.ViewPost.VoteBarFrame;
 import com.example.david.dpsproject.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

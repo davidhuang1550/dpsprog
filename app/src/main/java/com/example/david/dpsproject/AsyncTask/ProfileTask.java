@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.example.david.dpsproject.Adapters.MyPostAdapter;
 import com.example.david.dpsproject.Class.Post;
+import com.example.david.dpsproject.Class.Users;
 import com.example.david.dpsproject.R;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +19,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by david on 2016-11-23.
@@ -31,10 +34,10 @@ public class ProfileTask extends AsyncTask<Void,Void,Void>{
     private ListView listView;
 
     private DatabaseReference dbReference;
-    private FirebaseUser firebaseUser;
+    private Users user;
 
     private ProgressDialog pDialog;
-    public ProfileTask(String sub_posts,String profile_post, View v,Activity activity,DatabaseReference dbRef,FirebaseUser firebaseU){
+    public ProfileTask(String sub_posts,String profile_post, View v,Activity activity,DatabaseReference dbRef, Users u){
         sub_book_post=sub_posts;
         profile_book_post=profile_post;
         myView=v;
@@ -43,7 +46,7 @@ public class ProfileTask extends AsyncTask<Void,Void,Void>{
         ptemp=new ArrayList<Post>();
 
         dbReference=dbRef;
-        firebaseUser=firebaseU;
+        user=u;
 
     }
     public void ShowProgressDialog() { // progress
@@ -69,15 +72,43 @@ public class ProfileTask extends AsyncTask<Void,Void,Void>{
     protected Void doInBackground(Void... params) {
         try{
             do {
+                Iterator iterator;
+                if(profile_book_post.equals("Posts")) {
+                    iterator = user.getPosts().entrySet().iterator();
+                }else{
+                    iterator = user.getBookmarks().entrySet().iterator();
+                }
+                    while (iterator.hasNext()){
+                        Map.Entry pair = (Map.Entry)iterator.next();
+                        ArrayList<String> values = (ArrayList<String>) pair.getValue();
+                        for(String s: values) {
+                            dbReference.child("Sub").child(pair.getKey().toString()).child("posts").child(s).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Post post = dataSnapshot.getValue(Post.class);
+                                    if(post!=null){
+                                        post.setKey(dataSnapshot.getKey());
+                                        ptemp.add(post);
+                                    }
+                                }
 
-                dbReference.child("Users").child(firebaseUser.getUid()).child(profile_book_post).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+
+                /*dbReference.child("Users").child(user.get).child(profile_book_post).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         for (DataSnapshot s : dataSnapshot.getChildren()) {
 
                             for (DataSnapshot temp : s.getChildren()) {
-                                dbReference.child("Sub").child(s.getKey()).child(sub_book_post).child(temp.getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                dbReference.child("Sub").child(s.getKey()).child("posts").child(temp.getValue().toString()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         try {
@@ -103,7 +134,7 @@ public class ProfileTask extends AsyncTask<Void,Void,Void>{
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                     }
-                });
+                });*/
                 Thread.sleep(1000);
             }while(ptemp.size() == 0);
         }catch (InterruptedException e){

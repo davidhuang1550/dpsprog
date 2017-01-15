@@ -46,6 +46,7 @@ public class PostModel {
     private ArrayList<Post> postId;
     private int currListPos;
     private Boolean DisplayBySearch;
+    private int lastvisibleItem;
     int visibleItemCount;
     int totalItemCount;
     int firstVisibleItem;
@@ -111,6 +112,17 @@ public class PostModel {
 
             public void onScrollStateChanged(AbsListView view, int scrollState) {
 
+                if (firstVisibleItem > lastvisibleItem) {
+                    ((navigation)mActivity).hideStatusBar();
+                    ((navigation)mActivity).hideFab();
+                } else if (firstVisibleItem < lastvisibleItem) {
+                    ((navigation)mActivity).showStatusBar();
+                    ((navigation)mActivity).showFab();
+                }
+
+                lastvisibleItem = firstVisibleItem;
+
+
                 if(firstVisibleItem+visibleItemCount == totalItemCount && totalItemCount!=0)
                 {
                     if(progressBarPresenter.getPin()==false) {
@@ -121,6 +133,7 @@ public class PostModel {
                         addmoreItems();
                     }
                 }
+
             }
 
             public void onScroll(AbsListView view, int firstVisible,
@@ -128,6 +141,7 @@ public class PostModel {
                 visibleItemCount=visibleItem;
                 totalItemCount=totalItem;
                 firstVisibleItem=firstVisible;
+
 
             }
         });

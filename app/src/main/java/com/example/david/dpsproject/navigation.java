@@ -1,5 +1,6 @@
 package com.example.david.dpsproject;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
@@ -29,6 +30,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -94,6 +98,7 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
         setContentView(R.layout.activity_main2);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setShowHideAnimationEnabled(true);
         setFreshToken=false;
         dataBaseConnectionsPresenter = new DataBaseConnectionsPresenter();
 
@@ -165,6 +170,18 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
 
             }
         });
+    }
+    public void hideStatusBar(){
+      //  toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+        getSupportActionBar().hide();
+        //toolbar.animate().translationY(-toolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+
+    }
+    public void showStatusBar(){
+     //   toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+
+        getSupportActionBar().show();
+       // toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
     }
     public DataBaseConnectionsPresenter getDataBaseConnectionsPresenter(){
         return dataBaseConnectionsPresenter;

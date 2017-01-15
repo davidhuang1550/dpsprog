@@ -38,7 +38,7 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
     Activity mActivity;
     ListView listView;
     Users user;
-    DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
     private PostPresenter postPresenter;
     private DefaultProgressBarPresenter defaultProgressBarPresenter;
 
@@ -90,16 +90,6 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
             ((navigation)mActivity).setLoginFalse();
             postPresenter.setUserPost();
         }
-       /* else if(bundle!=null){
-            if (bundle.get("user").equals("true")) {
-                ((navigation)mActivity).setLoginFalse();
-                postPresenter.setUserPost();
-            } else if (bundle.get("user").equals("false")) {
-                ((navigation)mActivity).setLogintrue();
-
-                postPresenter.setDefaultPost();
-            }
-        }*/
 
         else{
             postPresenter.setDefaultPost();
@@ -109,9 +99,6 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
     @Override
     public void onResume() {
         super.onResume();
-      /*  navigationView = (NavigationView) myView.findViewById(R.id.nav_view);
-        Menu nav_Menu = navigationView.getMenu();
-        if(nav_Menu!=null)nav_Menu.findItem(R.id.search).setVisible(true);*/
         ((navigation)mActivity).showFab(); // when in front page you must show compose option
     }
 

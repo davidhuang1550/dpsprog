@@ -3,6 +3,7 @@ package com.example.david.dpsproject.Fragments.ViewPost;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,11 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.Users;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,11 +45,10 @@ public class postview extends Fragment  {
     private TextView Description;
     private View myView;
     private Activity mActivity;
-    Post post;
+    private Post post;
     private Uri imagefile;
-    FirebaseAuth firebaseAuth;
-    DatabaseReference databaseReference;
-    FirebaseUser firebaseUser;
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
+    private ProgressBar progressDialog;
     Bundle bundle;
 
     @Override
@@ -59,18 +61,27 @@ public class postview extends Fragment  {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((navigation)mActivity).hideFab();
+        dataBaseConnectionsPresenter = ((navigation)mActivity).getDataBaseConnectionsPresenter();
         bundle = getArguments();
         post = (Post) bundle.getSerializable("Post_Object");
         imagefile=null;
+        ((navigation)mActivity).showStatusBar();
+
         if(post.getImage()!=null&& (!post.getImage().equals(""))){
+
+
             myView =inflater.inflate(R.layout.fragment_postview_picture,container,false);
             final ImageView imageView = (ImageView)myView.findViewById(R.id.imageView);
+
+            progressDialog = (ProgressBar)myView.findViewById(R.id.loading_image);
+            progressDialog.setVisibility(View.VISIBLE);
             try {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReferenceFromUrl("gs://dpsproject-85e85.appspot.com/Images/" + post.getImage());
                 storageRef.getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
+                        progressDialog.setVisibility(View.INVISIBLE);
                         Picasso.with(mActivity).load(task.getResult()).fit().into(imageView);
                         imagefile=task.getResult();
                     }
@@ -88,6 +99,7 @@ public class postview extends Fragment  {
 
                     Bundle bundle = new Bundle();
                     bundle.putString("URI",imagefile.toString());
+                    ((navigation)mActivity).hideStatusBar();
 
                     ZoomInFragment zoomInFragment = new ZoomInFragment();
                     zoomInFragment.setArguments(bundle);
@@ -107,9 +119,6 @@ public class postview extends Fragment  {
 
 
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        firebaseUser = firebaseAuth.getCurrentUser();
 
         Title = (TextView) myView.findViewById(R.id.PostTitle);
         Title.setText(post.getTitle());

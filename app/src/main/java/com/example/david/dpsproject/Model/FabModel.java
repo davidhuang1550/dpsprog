@@ -5,6 +5,8 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.example.david.dpsproject.Dialog.PleaseLogin;
 import com.example.david.dpsproject.Fragments.CreatePost.CreatePost;
@@ -86,12 +88,20 @@ public class FabModel  {
 
         if(fab_image!=null)fab_image.hide();
         if(fab_desc!=null)fab_desc.hide();
-        if(fab!=null)fab.show();
+        if(fab!=null){
+            Animation animation = AnimationUtils.loadAnimation(mActivity, R.anim.slide_up);
+            fab.setAnimation(animation);
+            fab.show();
+        }
     }
     public void hideFab(){
         if(fab_image!=null)fab_image.hide();
         if(fab_desc!=null)fab_desc.hide();
-        if(fab!=null)fab.hide();
+        if(fab!=null){
+            Animation animation = AnimationUtils.loadAnimation(mActivity, R.anim.slide_down);
+            fab.setAnimation(animation);
+            fab.hide();
+        }
     }
 
 }

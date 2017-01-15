@@ -55,6 +55,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         Upload = (Button)myView.findViewById(R.id.uploadprofile);
 
         dataBaseConnectionsPresenter =((navigation)mActivity).getDataBaseConnectionsPresenter();
+        dataBaseConnectionsPresenter.setFirebaseUser();
+
         ((navigation)mActivity).hideFab();
 
         TextView joindate = (TextView)myView.findViewById(R.id.MemberSincedate);
@@ -131,7 +133,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()){
             case R.id.Tposts:
                 final ProfileTask getProfilePost = new ProfileTask("posts","Posts", myView,mActivity,
-                        dataBaseConnectionsPresenter.getDbReference(),dataBaseConnectionsPresenter.getFirebaseUser());
+                        dataBaseConnectionsPresenter.getDbReference(),((navigation)mActivity).getworkingUser());
                 getProfilePost.execute();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -146,7 +148,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.Tbookmark:
                 final ProfileTask getProfilePost_bookmark = new ProfileTask("posts","Bookmarks", myView,mActivity,
-                        dataBaseConnectionsPresenter.getDbReference(),dataBaseConnectionsPresenter.getFirebaseUser());
+                        dataBaseConnectionsPresenter.getDbReference(),((navigation)mActivity).getworkingUser());
                 getProfilePost_bookmark.execute();
                 handler.postDelayed(new Runnable() {
                     @Override

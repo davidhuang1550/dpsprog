@@ -56,6 +56,7 @@ public class ZoomInFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View view) {
         if(view.getId() == R.id.zoomedImage){
+            ((navigation)mActivity).showStatusBar();
             FragmentManager fragmentManager = mActivity.getFragmentManager();
 
             fragmentManager.beginTransaction().remove(this).commit();

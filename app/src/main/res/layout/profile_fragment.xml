@@ -5,153 +5,151 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:background="@color/white"
     android:layout_height="match_parent">
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:id="@+id/topProfile"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
-
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:rowCount="2"
-            android:columnCount="4">
-
-
-            <com.github.siyamed.shapeimageview.CircularImageView
-                android:layout_width="103dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_height="96dp"
-                android:id="@+id/profileImage"
-                android:layout_marginLeft="20dp"
-                app:siBorderWidth="5dp"
-                app:siBorderColor="#ffffff"
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:id="@+id/topProfile"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true" />
+                android:layout_alignParentStart="true">
 
-            <TextView
-                android:text="Member since: "
-                android:layout_width="wrap_content"
-                android:paddingLeft="20dp"
-                android:paddingTop="20dp"
-                android:layout_height="50dp"
-                android:id="@+id/MemberSince"
-                android:layout_column="1"
-                android:layout_row="0" />
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:rowCount="2"
+                    android:columnCount="4">
 
-            <TextView
-                android:text="1999/02/12"
-                android:layout_width="157dp"
-                android:paddingTop="20dp"
-                android:layout_height="50dp"
-                android:id="@+id/MemberSincedate"
-                android:layout_column="2"
-                android:layout_row="0" />
 
-            <TextView
-                android:text="10"
-                android:layout_width="192dp"
-                android:paddingLeft="10dp"
-                android:layout_height="29dp"
-                android:layout_marginTop="50dp"
-                android:id="@+id/NumberPosts"
-                android:layout_column="2"
-                android:layout_row="0" />
+                    <com.github.siyamed.shapeimageview.CircularImageView
+                        android:layout_width="103dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_height="96dp"
+                        android:id="@+id/profileImage"
+                        android:layout_marginLeft="20dp"
+                        app:siBorderWidth="5dp"
+                        app:siBorderColor="#ffffff"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true" />
 
-            <TextView
-                android:text="Number of Posts: "
-                android:layout_width="157dp"
-                android:paddingLeft="20dp"
-                android:layout_height="26dp"
-                android:layout_marginTop="50dp"
-                android:id="@+id/NumPosts"
-                android:layout_column="1"
-                android:layout_row="0" />
+                    <TextView
+                        android:text="Member since: "
+                        android:layout_width="wrap_content"
+                        android:paddingLeft="20dp"
+                        android:paddingTop="20dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/MemberSince"
+                        android:layout_column="1"
+                        android:layout_row="0" />
 
-            <Button
-                android:layout_width="104dp"
-                android:layout_height="28dp"
-                android:layout_row="1"
-                android:text="Upload"
-                android:layout_marginLeft="20dp"
-                android:textColor="@color/white"
-                android:id="@+id/uploadprofile"
-                android:textStyle="bold"
+                    <TextView
+                        android:text="1999/02/12"
+                        android:layout_width="157dp"
+                        android:paddingTop="20dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/MemberSincedate"
+                        android:layout_column="2"
+                        android:layout_row="0" />
+
+                    <TextView
+                        android:text="10"
+                        android:layout_width="192dp"
+                        android:paddingLeft="10dp"
+                        android:layout_height="29dp"
+                        android:layout_marginTop="50dp"
+                        android:id="@+id/NumberPosts"
+                        android:layout_column="2"
+                        android:layout_row="0" />
+
+                    <TextView
+                        android:text="Number of Posts: "
+                        android:layout_width="157dp"
+                        android:paddingLeft="20dp"
+                        android:layout_height="26dp"
+                        android:layout_marginTop="50dp"
+                        android:id="@+id/NumPosts"
+                        android:layout_column="1"
+                        android:layout_row="0" />
+
+                    <Button
+                        android:layout_width="104dp"
+                        android:layout_height="28dp"
+                        android:layout_row="1"
+                        android:text="Upload"
+                        android:layout_marginLeft="20dp"
+                        android:textColor="@color/white"
+                        android:id="@+id/uploadprofile"
+                        android:textStyle="bold"
+                        android:background="@color/backgroundblue"
+                        android:layout_column="0">
+
+                    </Button>
+
+                </GridLayout>
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/bottomProfile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/topProfile"
+                android:layout_alignParentStart="true">
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/infoprofile"
+                android:layout_width="match_parent"
+                android:layout_height="200px"
                 android:background="@color/backgroundblue"
-                android:layout_column="0">
+                android:layout_below="@+id/bottomProfile"
+                android:layout_alignParentStart="true">
 
-            </Button>
-
-        </GridLayout>
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/bottomProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/topProfile"
-        android:layout_alignParentStart="true">
-
-
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/infoprofile"
-        android:layout_width="match_parent"
-        android:layout_height="200px"
-        android:background="@color/backgroundblue"
-        android:layout_below="@+id/bottomProfile"
-        android:layout_alignParentStart="true">
-
-        <TextView
-            android:layout_width="179dp"
-            android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Posts"
-            android:paddingTop="50px"
-            android:paddingLeft="100px"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:id="@+id/Tposts"
-            android:layout_gravity="left|center_vertical" />
+                <TextView
+                    android:layout_width="179dp"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Posts"
+                    android:paddingTop="50px"
+                    android:paddingLeft="100px"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:id="@+id/Tposts"
+                    android:layout_gravity="left|center_vertical" />
 
 
 
-        <TextView
-            android:layout_width="175dp"
-            android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Bookmarks"
-            android:paddingRight="50px"
-            android:paddingTop="50px"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:id="@+id/Tbookmark"
-            android:layout_gravity="right|center_vertical" />
+                <TextView
+                    android:layout_width="175dp"
+                    android:layout_height="match_parent"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Bookmarks"
+                    android:paddingRight="50px"
+                    android:paddingTop="50px"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:id="@+id/Tbookmark"
+                    android:layout_gravity="right|center_vertical" />
 
-    </FrameLayout>
-    <FrameLayout
-        android:id="@+id/listviewlayout"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/infoprofile"
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/listviewlayout"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@+id/infoprofile"
 
-        android:layout_alignParentStart="true">
-    <ListView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/profile_list_view"
-        android:scrollbars="none"
-        android:dividerHeight="0dp"
-        android:divider="@null"
-        android:layout_below="@+id/infoprofile"
-        android:layout_gravity="center"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
-    </FrameLayout>
-
-
+                android:layout_alignParentStart="true">
+            <ListView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/profile_list_view"
+                android:scrollbars="none"
+                android:dividerHeight="0dp"
+                android:divider="@null"
+                android:layout_below="@+id/infoprofile"
+                android:layout_gravity="center"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true" />
+            </FrameLayout>
+    
 </RelativeLayout>
