@@ -23,8 +23,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.david.dpsproject.AsyncTask.UserAsyncTask;
 import com.example.david.dpsproject.Class.Users;
 import com.example.david.dpsproject.Fragments.FrontPage;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,9 +48,7 @@ import java.util.ArrayList;
  */
 public class LogIn extends Fragment implements View.OnClickListener {
     View myView;
-    FirebaseAuth authentication;
-    DatabaseReference dbReference;
-    FirebaseUser firebaseUser;
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
     EditText userName;
     EditText userPassword;
     ProgressDialog pDialog;
@@ -66,9 +66,7 @@ public class LogIn extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity.setTitle("Login");
         myView = inflater.inflate(R.layout.login_in,container,false);
-        authentication= FirebaseAuth.getInstance(); // get instance of my firebase console
-        dbReference = FirebaseDatabase.getInstance().getReference(); // access to database
-        firebaseUser = authentication.getCurrentUser();
+        dataBaseConnectionsPresenter= new DataBaseConnectionsPresenter();
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.compose);
         if(fab!=null)fab.hide(); // hide it in the create post area
@@ -114,7 +112,7 @@ public class LogIn extends Fragment implements View.OnClickListener {
 
     }
     protected void Login(final String email, final String password){
-        authentication.signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+        dataBaseConnectionsPresenter.getFireBaseAuth().signInWithEmailAndPassword(email,password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                  HideProgressDialog();
@@ -124,88 +122,22 @@ public class LogIn extends Fragment implements View.OnClickListener {
                 else{
                     Bundle bundle = new Bundle();
                     final FrontPage fragment = new FrontPage();
-                    FragmentManager fragmentManager = getFragmentManager();
+                    dataBaseConnectionsPresenter.setFirebaseUser();
 
                     bundle.putString("UID",task.getResult().getUser().getUid().toString());
                     fragment.setArguments(bundle);
 
-                    final AsyncTask<Void, Void, Void> getuserName = new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected void onPreExecute() {
-                            ShowProgressDialog();
-                        }
-
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            try {
-                                do {
-
-                                    dbReference.child("Users").child(firebaseUser.getUid()).addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            try {
-                                                tempU = dataSnapshot.getValue(Users.class);
-                                                //  byte[] decodedString = Base64.decode(tempU.getPicture(), Base64.DEFAULT);
-                                                //   decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                                                // setprofilepic(decodedByte);
-                                            } catch (DatabaseException e) {
-                                                Toast.makeText(mActivity, "something went wrong", Toast.LENGTH_SHORT).show();
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                    //   Thread.sleep(1000);
-                                } while (tempU != null);
-                                Thread.sleep(1000);
-
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            HideProgressDialog();
-                            if (tempU != null) {
-                                name = (TextView) mActivity.findViewById(R.id.headText);
-                                if(name!=null)name.setText(tempU.getUserName());
-                                ((navigation)mActivity).setUser(tempU);
-                                final View layout = (View) mActivity.findViewById(R.id.navPic);
-                                if (tempU.getPicture() != "" && tempU.getPicture() != null) {
-                                    byte[] decodedString = Base64.decode(tempU.getPicture(), Base64.DEFAULT);
-                                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                                    ((navigation)mActivity).setprofilepic(decodedByte);
-                                    layout.setBackground(new BitmapDrawable(getResources(), decodedByte));
-                                }
-                                Menu menu=((navigation)mActivity).getSubMenu();
-
-                                if(menu!=null) {
-                                    ArrayList<String> subcat = tempU.getSubcategory();
-                                    for (int i = 0; i < subcat.size(); i++) {
-                                        menu.add(R.id.second_nav, Menu.NONE, 0, subcat.get(i));
-                                    }
-                                }
-                                getFragmentManager().beginTransaction().replace(R.id.content_frame,fragment).commit();
-                            }
-                            else System.out.println("error1"); // set logout settings if this happens
-                        }
-
-                    };
-                    firebaseUser=authentication.getCurrentUser();
-                    ((navigation)mActivity).setFirebaseUser(firebaseUser);
+                    final UserAsyncTask getuserName = new UserAsyncTask((navigation) mActivity, dataBaseConnectionsPresenter.getDbReference(),
+                            dataBaseConnectionsPresenter.getFirebaseUser(), fragment);
                     Handler userhandler = new Handler();
+                    ((navigation)mActivity).ShowProgressDialog();
                     getuserName.execute();
                     Runnable userthread= new Runnable() {
                         @Override
                         public void run() {
                             if(getuserName.getStatus()==AsyncTask.Status.RUNNING){
                                 getuserName.cancel(true);
-                                HideProgressDialog();
+                                ((navigation)mActivity).HideProgressDialog();
                                 Toast.makeText(mActivity,"Error has occured ",Toast.LENGTH_SHORT).show();
                             }
                         }

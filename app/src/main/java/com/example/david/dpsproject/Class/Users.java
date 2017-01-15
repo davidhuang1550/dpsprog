@@ -21,7 +21,7 @@ public class Users {
     private String JoinDate;
 
     private int NumOfPosts;
-
+    private String FcmToken;
     private HashMap<String, ArrayList<String>> Posts;
     private HashMap<String, ArrayList<String>>Bookmarks;
     private HashMap<String, ArrayList<String>> Viewed;
@@ -38,7 +38,7 @@ public class Users {
         Viewed=new HashMap<String, ArrayList<String>>();
     }
     public Users(String u, String p,HashMap<String, ArrayList<String>> s,HashMap<String, ArrayList<String>> b,
-                 HashMap<String, ArrayList<String>> v, String pic,ArrayList<String> subc, String join,int numPost) {
+                 HashMap<String, ArrayList<String>> v, String pic,ArrayList<String> subc, String join,int numPost, String fcm) {
         userName = u;
         password = p;
         Posts=s;
@@ -48,6 +48,7 @@ public class Users {
         Subcategory=subc;
         JoinDate=join;
         NumOfPosts=numPost;
+        FcmToken=fcm;
       //  profile=pro;
     }
 
@@ -59,6 +60,14 @@ public class Users {
 
         return u;
     }
+    public String getFcmToken() {
+        return FcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        FcmToken = fcmToken;
+    }
+
     public void IncNumOfPosts(){
         NumOfPosts++;
     }
@@ -148,9 +157,9 @@ public class Users {
         return decodedByte;
     }
     public void addToHashMapPost(String sub, String post){
-        ArrayList<String> posts = Posts.get(sub);
-        if(post!=null){
-            posts.add(post);
+        ArrayList<String> p = Posts.get(sub);
+        if(p!=null){
+            p.add(post);
         }
         else{
             ArrayList<String> tempPost = new ArrayList<>();

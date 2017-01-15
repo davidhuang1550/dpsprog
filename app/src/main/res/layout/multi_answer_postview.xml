@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/replaceable_frame"
+        android:layout_below="@+id/PostDesc"
+        android:background="@color/white"
+        android:layout_alignParentStart="true">
+
+
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/layouttable"
+                android:stretchColumns="1">
+
+                <TableRow>
+                    <TextView
+                        android:text="Option 1"
+                        android:id="@+id/opt0"
+                        android:padding="30px"/>
+                    <EditText
+                        android:background="@drawable/postborder"
+                        android:id="@+id/field0"
+                        android:layout_marginRight="20px"/>
+                </TableRow>
+                <TableRow>
+                    <TextView
+                        android:text="Option 2"
+                        android:id="@+id/opt1"
+                        android:padding="30px"/>
+                    <EditText
+                        android:background="@drawable/postborder"
+                        android:id="@+id/field1"
+                        android:layout_marginRight="20px"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button
+                        android:text="Add option"
+                        android:textColor="@color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/addMore"
+                        android:background="@drawable/profilebuttonbackground"/>
+                </TableRow>
+                <TableRow>
+                    <Button
+                        android:text="Create Post"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/submitpost"
+                        android:background="@drawable/loginbutton"/>
+                </TableRow>
+
+            </TableLayout>
+
+
+
+    </FrameLayout>
+</LinearLayout>

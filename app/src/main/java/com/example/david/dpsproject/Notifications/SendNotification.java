@@ -9,8 +9,15 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.david.dpsproject.Class.Post;
+import com.example.david.dpsproject.Class.Users;
+import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,16 +29,43 @@ import java.util.Map;
 public class SendNotification {
 
     private Activity mActivity;
+    private String token;
+    private String PosterId;
+    private String Key;
+    private String Category;
     private String app_server_url ="https://ecbolic-careers.000webhostapp.com/fcm_insert.php";
-    public SendNotification(Activity activity){
+    private DataBaseConnectionsPresenter dataBaseConnectionsPresenter;
+    public SendNotification(Activity activity,String Poster,String k,String sub){
         mActivity=activity;
+        PosterId= Poster;
+        Key=k;
+        Category=sub;
+        dataBaseConnectionsPresenter = ((navigation)mActivity).getDataBaseConnectionsPresenter();
+
     }
 
+    public void send(){
+        dataBaseConnectionsPresenter.getDbReference().child("Users").child(PosterId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    Users users = dataSnapshot.getValue(Users.class);
+                    token=users.getFcmToken();
+                    sendToken();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
     public void sendToken(){
-        SharedPreferences sharedPreferences = mActivity.getApplicationContext().getSharedPreferences(mActivity.getString(R.string.FCM_PREF), Context.MODE_PRIVATE);
-        final String token= sharedPreferences.getString(mActivity.getString(R.string.FCM_TOKEN),"");
         StringRequest stringRequest= new StringRequest(Request.Method.POST, app_server_url,
                 new Response.Listener<String>() {
                     @Override
@@ -49,6 +83,8 @@ public class SendNotification {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
                 params.put("fcm_token",token);
+                params.put("post_key",Key);
+                params.put("sub_key",Category);
 
                 return params;
             }

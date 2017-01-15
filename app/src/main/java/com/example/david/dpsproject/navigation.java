@@ -34,11 +34,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.david.dpsproject.AsyncTask.UserAsyncTask;
+import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.Users;
 import com.example.david.dpsproject.Dialog.OptionsDialog;
 import com.example.david.dpsproject.Fragments.FrontPage;
 import com.example.david.dpsproject.Fragments.Authentication.LogIn;
 import com.example.david.dpsproject.Fragments.ProfileFragment;
+import com.example.david.dpsproject.Fragments.ViewPost.postview;
 import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.DataBaseConnectionsPresenter;
 import com.example.david.dpsproject.Presenter.UsedByMoreThanOneClass.FabPresenter;
 import com.example.david.dpsproject.Presenter.SortByPresenter;
@@ -46,12 +48,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 public class navigation extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,FragmentManager.OnBackStackChangedListener{
     protected Toolbar toolbar;
@@ -69,11 +77,13 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
     private MenuItem unsubscribId;
     private MenuItem SortBy;
     private Menu nav_Menu;
+    private  Bundle bundle;
 
     private  View CategoryView;
     private  Users tempU;
     private String SubCat;
     private SortByPresenter sortByPresenter;
+    private boolean setFreshToken;
 
 
     private Uri imageUpload;
@@ -84,7 +94,7 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
         setContentView(R.layout.activity_main2);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        setFreshToken=false;
         dataBaseConnectionsPresenter = new DataBaseConnectionsPresenter();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.compose);
@@ -107,22 +117,54 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
         navigationView.setNavigationItemSelectedListener(this);
         subMenu=navigationView.getMenu();
         nav_Menu = navigationView.getMenu();
-
+        FragmentManager fragmentManager = getFragmentManager();
         frontPage= new FrontPage();
-        Bundle bundle = new Bundle();
         if(dataBaseConnectionsPresenter.getFirebaseUser()!=null){
             getUser();
-            bundle.putString("user","true");
-            frontPage.setArguments(bundle);
         }
         else{
-            bundle.putString("user","false");
-            frontPage.setArguments(bundle);
-            FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction().add(R.id.content_frame,frontPage,"FrontPage").commit();
-
         }
 
+
+
+
+
+    }
+    public boolean isNotification(){
+        Intent temp=getIntent();
+        bundle= temp.getExtras();
+        if(bundle!=null){
+            if(bundle.getBundle("Info")!=null)return true;
+        }
+        return false;
+    }
+    public void setPostview(){
+        final FragmentManager fragmentManager = getFragmentManager();
+        dataBaseConnectionsPresenter.getDbReference().child("Sub").child(bundle.getBundle("Info").getString("SubId"," ")).child("posts").
+                child(bundle.getBundle("Info").getString("PostId"," ")).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Bundle bundle1 = new Bundle();
+
+                Post post = dataSnapshot.getValue(Post.class);
+                if(post!=null) {
+                    bundle1.putSerializable("Post_Object", (Serializable) post);
+
+                    postview pview = new postview();
+                    pview.setArguments(bundle1);
+                    fragmentManager.beginTransaction().add(R.id.content_frame, pview).commit();
+                }
+                else{
+                    //display toast
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
     public DataBaseConnectionsPresenter getDataBaseConnectionsPresenter(){
         return dataBaseConnectionsPresenter;
@@ -140,7 +182,16 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
     public void setSubCat(String sub){
         SubCat=sub;
     }
-
+    public boolean isSetFreshToken() {
+        return setFreshToken;
+    }
+    public void refreshToken(){
+        if(dataBaseConnectionsPresenter.getFirebaseUser()!=null)dataBaseConnectionsPresenter.getDbReference().child("Users").child(dataBaseConnectionsPresenter.getUID())
+                .child("FcmToken").setValue(FirebaseInstanceId.getInstance().getToken());
+    }
+    public void setSetFreshToken(boolean setFreshToken) {
+        this.setFreshToken = setFreshToken;
+    }
 
     public void setPostView(ListView l){listView=l;}
 
@@ -299,6 +350,12 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
         nav_Menu.findItem(R.id.signout).setVisible(true);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        HideProgressDialog();
+    }
+
     public void setCategoryView(View categoryView) {
         CategoryView = categoryView;
     }
@@ -455,6 +512,7 @@ public class navigation extends AppCompatActivity implements NavigationView.OnNa
     public void HideProgressDialog() {
         if(pDialog!=null && pDialog.isShowing()){
             pDialog.dismiss();
+            pDialog.cancel();
         }
     }
     public String getFilePath(){return filePath;}

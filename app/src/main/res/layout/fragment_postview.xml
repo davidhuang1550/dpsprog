@@ -19,7 +19,8 @@
                 android:text="New Text"
                 android:id="@+id/PostTitle"
                 android:textSize="25dp"
-                android:background="@drawable/headerdivider"
+                android:padding="10dp"
+                android:background="@color/white"
                 android:layout_alignEnd="@+id/PostDesc"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true" />

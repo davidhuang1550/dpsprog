@@ -56,7 +56,7 @@ public class CreatePostMoreOptions extends Fragment implements View.OnClickListe
             fragment = (CreatePostInterface) bundle.getParcelable("Fragment");
             isImage=(bundle.getString("Image").equals("true"))?true:false;
         }
-        myView = inflater.inflate(R.layout.multipleanswerpostview,container,false);
+        myView = inflater.inflate(R.layout.multi_answer_postview,container,false);
         addMore = (Button)myView.findViewById(R.id.addMore);
         submit = (Button)myView.findViewById(R.id.submitpost);
         tableLayout= (TableLayout)myView.findViewById(R.id.layouttable);

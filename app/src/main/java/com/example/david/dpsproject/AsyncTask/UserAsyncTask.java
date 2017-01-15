@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -26,6 +27,7 @@ import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 
@@ -47,11 +49,6 @@ public class UserAsyncTask extends AsyncTask<Void,Void,Void>{
         frontPage=fp;
     }
 
-
-    @Override
-    protected void onPreExecute() {
-        navgiate.ShowProgressDialog();
-    }
 
     @Override
     protected Void doInBackground(Void... params) {
@@ -79,6 +76,10 @@ public class UserAsyncTask extends AsyncTask<Void,Void,Void>{
             } while (name != null && tempU != null);
             Thread.sleep(1000);
             navgiate.setUser(tempU);
+            SharedPreferences sharedPreferences = navgiate.getSharedPreferences(navgiate.getString(R.string.FCM_PREF),Context.MODE_PRIVATE);
+            String token =sharedPreferences.getString(navgiate.getString(R.string.FCM_TOKEN),"");
+            if(!token.equals("")) dbReference.child("Users").child(firebaseUser.getUid()).child("FcmToken").setValue(FirebaseInstanceId.getInstance().getToken());
+
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -88,16 +89,11 @@ public class UserAsyncTask extends AsyncTask<Void,Void,Void>{
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        //   HideProgressDialog();
-        if (tempU != null) {
+        navgiate.HideProgressDialog();
+
+        if(tempU!=null){
+
             name.setText(tempU.getUserName());
-            final View layout = (View) navgiate.findViewById(R.id.navPic);
-            if (tempU.getPicture() != "" && tempU.getPicture() != null) {
-                byte[] decodedString = Base64.decode(tempU.getPicture(), Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                navgiate.setprofilepic(decodedByte);
-                layout.setBackground(new BitmapDrawable(navgiate.getResources(), decodedByte));
-            }
             Menu menu=navgiate.getSubMenu();
 
             if(menu!=null) {
@@ -114,9 +110,12 @@ public class UserAsyncTask extends AsyncTask<Void,Void,Void>{
             FirebaseAuth.getInstance().signOut();
 
         }
-        navgiate.HideProgressDialog();
-        FragmentManager fragmentManager = navgiate.getFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.content_frame,frontPage,"FrontPage").commit();
+
+       if(navgiate.isNotification())navgiate.setPostview();
+        else {
+            FragmentManager fragmentManager = navgiate.getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, frontPage, "FrontPage").commit();
+        }
     }
 
 }

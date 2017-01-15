@@ -23,6 +23,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ public class SignUp extends Fragment implements View.OnClickListener {
     EditText userPassword;
     EditText passwordConfirm;
     Button signUp;
-    ProgressDialog pDialog;
     //Firebase variables
     FirebaseAuth authentication;
     DatabaseReference dbReference;
@@ -64,12 +64,15 @@ public class SignUp extends Fragment implements View.OnClickListener {
                     Date cDate = new Date();
                     String fDate = new SimpleDateFormat("yyyy-MM-dd").format(cDate);
 
+                    /*
+                    default sub categories must be changed
+                     */
                     ArrayList<String> sub = new ArrayList<String>();
                     sub.add("Jesus");
                     sub.add("Soccer");
                     sub.add("Uplifting");
                     Users u = new Users(email,password, new HashMap<String, ArrayList<String>>(),new HashMap<String, ArrayList<String>>(),
-                            new HashMap<String, ArrayList<String>>(),"",sub,fDate,0);
+                            new HashMap<String, ArrayList<String>>(),"",sub,fDate,0, FirebaseInstanceId.getInstance().getToken());
                     dbReference.child("Users").child(task.getResult().getUser().getUid()).setValue(u);
                     FragmentManager fragmentManager = getFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.content_frame,new LogIn()).commit();

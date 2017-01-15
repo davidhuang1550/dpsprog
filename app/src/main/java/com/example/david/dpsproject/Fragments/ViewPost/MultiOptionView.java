@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.david.dpsproject.Class.Post;
 import com.example.david.dpsproject.Class.Users;
+import com.example.david.dpsproject.Notifications.SendNotification;
 import com.example.david.dpsproject.R;
 import com.example.david.dpsproject.navigation;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,9 +25,6 @@ import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,7 +55,7 @@ public class MultiOptionView extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.multianswerview, container, false);
+        myView = inflater.inflate(R.layout.multi_answer_view, container, false);
         responseNum=0;
         previously_selected=0;
         OptionView = new HashMap<>();
@@ -146,11 +144,16 @@ public class MultiOptionView extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
         PieChartFragment pieChartFragment = new PieChartFragment();
+        sendNotification();
         Bundle bundle = new Bundle();
         bundle.putSerializable("Post_Object",post);
         pieChartFragment.setArguments(bundle);
         FragmentManager fragmentManager = mActivity.getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.replaceable_frame, pieChartFragment).commit();
+    }
+    public void sendNotification(){
+        SendNotification sendNotification = new SendNotification(mActivity,post.getPosterId(),post.getKey(),post.getSubN());
+        sendNotification.send();
     }
 
 }

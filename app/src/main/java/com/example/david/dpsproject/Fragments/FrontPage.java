@@ -90,7 +90,7 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
             ((navigation)mActivity).setLoginFalse();
             postPresenter.setUserPost();
         }
-        else if(bundle!=null){
+       /* else if(bundle!=null){
             if (bundle.get("user").equals("true")) {
                 ((navigation)mActivity).setLoginFalse();
                 postPresenter.setUserPost();
@@ -99,7 +99,7 @@ public class FrontPage extends Fragment implements FragmentManager.OnBackStackCh
 
                 postPresenter.setDefaultPost();
             }
-        }
+        }*/
 
         else{
             postPresenter.setDefaultPost();

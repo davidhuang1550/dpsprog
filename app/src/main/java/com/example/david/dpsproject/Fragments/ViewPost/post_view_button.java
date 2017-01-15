@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.david.dpsproject.Class.Post;
+import com.example.david.dpsproject.Notifications.SendNotification;
 import com.example.david.dpsproject.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -127,6 +128,7 @@ public class post_view_button extends Fragment implements View.OnClickListener{
                     Bundle bundle = new Bundle();
                     bundle.putInt("yes",post.getYes());
                     bundle.putInt("no",post.getNo());
+                    sendNotification();
 
                     VoteBarFrame voteBarFrame = new VoteBarFrame();
                     voteBarFrame.setArguments(bundle);
@@ -142,6 +144,10 @@ public class post_view_button extends Fragment implements View.OnClickListener{
 
             }
         });
+    }
+    public void sendNotification(){
+        SendNotification sendNotification = new SendNotification(mActivity,post.getPosterId(),post.getKey(),post.getSubN());
+        sendNotification.send();
     }
 
 }
